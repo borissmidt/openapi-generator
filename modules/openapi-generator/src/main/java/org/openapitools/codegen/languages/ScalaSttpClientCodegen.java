@@ -44,17 +44,18 @@ import static org.openapitools.codegen.utils.StringUtils.camelize;
 
 public class ScalaSttpClientCodegen extends AbstractScalaCodegen implements CodegenConfig {
     private static final StringProperty STTP_CLIENT_VERSION = new StringProperty("sttpClientVersion", "The version of " +
-            "sttp client", "2.2.9");
+            "sttp client", "3.3.18");
     private static final BooleanProperty USE_SEPARATE_ERROR_CHANNEL = new BooleanProperty("separateErrorChannel",
             "Whether to return response as " +
                     "F[Either[ResponseError[ErrorType], ReturnType]]] or to flatten " +
                     "response's error raising them through enclosing monad (F[ReturnType]).", true);
     private static final StringProperty JODA_TIME_VERSION = new StringProperty("jodaTimeVersion", "The version of " +
-            "joda-time library", "2.10.10");
+            "joda-time library", "2.10.13");
     private static final StringProperty JSON4S_VERSION = new StringProperty("json4sVersion", "The version of json4s " +
             "library", "3.6.11");
     private static final StringProperty CIRCE_VERSION = new StringProperty("circeVersion", "The version of circe " +
-            "library", "0.13.0");
+            "library", "0.14.1");
+
     private static final JsonLibraryProperty JSON_LIBRARY_PROPERTY = new JsonLibraryProperty();
 
     public static final String DEFAULT_PACKAGE_NAME = "org.openapitools.client";
