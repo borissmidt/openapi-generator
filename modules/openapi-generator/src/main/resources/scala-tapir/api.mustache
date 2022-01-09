@@ -1,0 +1,73 @@
+{{>licenseInfo}}
+package {{package}}
+
+{{#imports}}
+import {{import}}
+{{/imports}}
+import {{invokerPackage}}.JsonSupport._
+import sttp.tapir._
+import sttp.tapir.EndpointIO.annotations._
+import sttp.model._
+
+{{#operations}}
+object {{classname}} {
+  val baseUrl: String = "{{{basePath}}}"
+{{#operation}}
+{{#javadocRenderer}}
+{{>javadoc}}
+{{/javadocRenderer}}
+
+  @endpointInput("{{{path}}}")
+  case class {{operationIdCamelCase}}Input (
+  {{#pathParams}}
+    @path {{>fieldEncoder}}
+  {{/pathParams}}
+  {{#queryParams}}
+    @query {{>fieldEncoder}}
+  {{/queryParams}}
+  {{#headerParams}}
+    @header {{>fieldEncoder}}
+  {{/headerParams}}
+  {{#bodyParam}}
+    @jsonbody {{>fieldEncoder}}
+  {{/bodyParam}}
+  {{#authMethods}}
+  {{#isBasicBasic}}
+    @basic paramName: UsernamePassword
+  {{/isBasicBasic}}
+  {{#isBasicBearer}}
+    @bearer {{>fieldEncoder}}
+  {{/isBasicBearer}}
+  {{#isKeyInCookie}}
+    no cookie authentication implemented
+  {{/isKeyInCookie}}
+  {{/authMethods}}
+  )
+
+  object {{operationIdCamelCase}}Input{
+    val endpointInput: EndpointInput[{{operationIdCamelCase}}Input] = EndpointInput.derived
+  }
+
+  {{#responses}}
+      {{#is2xx}}
+  case class {{operationIdCamelCase}}Output (
+  {{#headers}}
+    @header {{>fieldEncoder}}
+  {{/headers}}
+    @jsonbody body {{>fieldEncoder}}
+  )
+  {{/is2xx}}
+  {{/responses}}
+
+  object {{operationIdCamelCase}}Output{
+    val endpointOutput: EndpointOutput[{{operationIdCamelCase}}Output] = EndpointOutput.derived
+  }
+
+  val {{operationId}} = endpoint
+      .method(Method.{{httpMethod.toUpperCase}})
+      .in({{operationIdCamelCase}}Input.endpointInput)
+      .out({{operationIdCamelCase}}Output.endpointOutput)
+
+{{/operation}}
+}
+{{/operations}}

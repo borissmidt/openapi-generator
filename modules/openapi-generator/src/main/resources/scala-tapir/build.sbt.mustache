@@ -1,0 +1,34 @@
+version := "{{artifactVersion}}"
+name := "{{artifactId}}"
+organization := "{{groupId}}"
+
+scalaVersion := "2.13.5"
+crossScalaVersions := Seq(scalaVersion.value, "2.12.13")
+
+libraryDependencies ++= Seq(
+{{#joda}}
+  "joda-time" % "joda-time" % "{{jodaTimeVersion}}",
+{{/joda}}
+{{#json4s}}
+  "org.json4s" %% "json4s-jackson" % "{{json4sVersion}}",
+{{/json4s}}
+{{#circe}}
+  "io.circe" %% "circe-core" % "{{circeVersion}}",
+  "io.circe" %% "circe-generic" % "{{circeVersion}}",
+  "io.circe" %% "circe-parser" % "{{circeVersion}}",
+{{/circe}}
+{{#upickle}}
+    "com.lihaoyi" %% "upickle" % "{{upickleVersion}}",
+{{/upickle}}
+{{#jsoniter}}
+  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"   % "{{jsoniterVersion}}",
+  "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "{{jsoniterVersion}}" % "compile-internal",
+{{/jsoniter}}
+  "com.softwaremill.sttp.tapir" %% "tapir-core" % "{{tapirVersion}}"
+)
+
+scalacOptions := Seq(
+  "-unchecked",
+  "-deprecation",
+  "-feature"
+)
