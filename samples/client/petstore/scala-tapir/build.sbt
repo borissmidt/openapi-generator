@@ -7,7 +7,9 @@ crossScalaVersions := Seq(scalaVersion.value, "2.12.13")
 
 libraryDependencies ++= Seq(
   "org.json4s" %% "json4s-jackson" % "3.6.11",
-  "com.softwaremill.sttp.tapir" %% "tapir-core" % "0.19.3"
+  "com.softwaremill.sttp.tapir" %% "tapir-core" % "0.19.3",
+  "com.softwaremill.sttp.tapir" %% "tapir-sttp-client" % "0.19.3",
+  "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % "0.19.3"
 )
 
 scalacOptions := Seq(

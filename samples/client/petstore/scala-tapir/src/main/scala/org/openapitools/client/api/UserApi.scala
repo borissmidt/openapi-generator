@@ -17,21 +17,23 @@ import sttp.tapir._
 import sttp.tapir.EndpointIO.annotations._
 import sttp.model._
 import scala.deprecated
+import sttp.client3.SttpBackend
+import sttp.tapir.client.sttp.SttpClientInterpreter
+
+trait UserApi[F[_]] {
+  import UserApi._
+  def createUser(input: CreateUserInput): F[Either[Unit,CreateUserOutput]]
+  def createUsersWithArrayInput(input: CreateUsersWithArrayInputInput): F[Either[Unit,CreateUsersWithArrayInputOutput]]
+  def createUsersWithListInput(input: CreateUsersWithListInputInput): F[Either[Unit,CreateUsersWithListInputOutput]]
+  def deleteUser(input: DeleteUserInput): F[Either[Unit,DeleteUserOutput]]
+  def getUserByName(input: GetUserByNameInput): F[Either[Unit,GetUserByNameOutput]]
+  def loginUser(input: LoginUserInput): F[Either[Unit,LoginUserOutput]]
+  def logoutUser(input: LogoutUserInput): F[Either[Unit,LogoutUserOutput]]
+  def updateUser(input: UpdateUserInput): F[Either[Unit,UpdateUserOutput]]
+}
 
 object UserApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
-  /**
-   * This can only be done by the logged in user.
-   * 
-   * Expected answers:
-   *   code 0 :  (successful operation)
-   * 
-   * Available security schemes:
-   *   api_key (apiKey)
-   * 
-   * @param user Created user object
-   */
-
   @endpointInput("/user")
   case class CreateUserInput (
      @jsonbody user: User
@@ -46,27 +48,22 @@ object UserApi {
     val endpointOutput: EndpointOutput[CreateUserOutput] = EndpointOutput.derived
   }
 
-  
-  val createUser = endpoint
-      .method(Method.POST)
-      .in(CreateUserInput.endpointInput)
-      .out(CreateUserOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[CreateUserError](-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(0)))-->
-<!--          -->
-<!--       ))-->
-<!---->
   /**
+   *       This can only be done by the logged in user.
+   * 
    * Expected answers:
    *   code 0 :  (successful operation)
    * 
    * Available security schemes:
    *   api_key (apiKey)
    * 
-   * @param user List of user object
+   * @param user Created user object
    */
+  
+  val createUser = endpoint
+      .method(Method.POST)
+      .in(CreateUserInput.endpointInput)
+      .out(CreateUserOutput.endpointOutput)
 
   @endpointInput("/user/createWithArray")
   case class CreateUsersWithArrayInputInput (
@@ -82,20 +79,8 @@ object UserApi {
     val endpointOutput: EndpointOutput[CreateUsersWithArrayInputOutput] = EndpointOutput.derived
   }
 
-  
-  val createUsersWithArrayInput = endpoint
-      .method(Method.POST)
-      .in(CreateUsersWithArrayInputInput.endpointInput)
-      .out(CreateUsersWithArrayInputOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[CreateUsersWithArrayInputError](-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(0)))-->
-<!--          -->
-<!--       ))-->
-<!---->
   /**
-   * Expected answers:
+   *       Expected answers:
    *   code 0 :  (successful operation)
    * 
    * Available security schemes:
@@ -103,6 +88,11 @@ object UserApi {
    * 
    * @param user List of user object
    */
+  
+  val createUsersWithArrayInput = endpoint
+      .method(Method.POST)
+      .in(CreateUsersWithArrayInputInput.endpointInput)
+      .out(CreateUsersWithArrayInputOutput.endpointOutput)
 
   @endpointInput("/user/createWithList")
   case class CreateUsersWithListInputInput (
@@ -118,30 +108,20 @@ object UserApi {
     val endpointOutput: EndpointOutput[CreateUsersWithListInputOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 0 :  (successful operation)
+   * 
+   * Available security schemes:
+   *   api_key (apiKey)
+   * 
+   * @param user List of user object
+   */
   
   val createUsersWithListInput = endpoint
       .method(Method.POST)
       .in(CreateUsersWithListInputInput.endpointInput)
       .out(CreateUsersWithListInputOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[CreateUsersWithListInputError](-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(0)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * This can only be done by the logged in user.
-   * 
-   * Expected answers:
-   *   code 400 :  (Invalid username supplied)
-   *   code 404 :  (User not found)
-   * 
-   * Available security schemes:
-   *   api_key (apiKey)
-   * 
-   * @param username The name that needs to be deleted
-   */
 
   @endpointInput("/user/{username}")
   case class DeleteUserInput (
@@ -157,28 +137,23 @@ object UserApi {
     val endpointOutput: EndpointOutput[DeleteUserOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       This can only be done by the logged in user.
+   * 
+   * Expected answers:
+   *   code 400 :  (Invalid username supplied)
+   *   code 404 :  (User not found)
+   * 
+   * Available security schemes:
+   *   api_key (apiKey)
+   * 
+   * @param username The name that needs to be deleted
+   */
   
   val deleteUser = endpoint
       .method(Method.DELETE)
       .in(DeleteUserInput.endpointInput)
       .out(DeleteUserOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[DeleteUserError](-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400))),-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(404)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Expected answers:
-   *   code 200 : User (successful operation)
-   *   code 400 :  (Invalid username supplied)
-   *   code 404 :  (User not found)
-   * 
-   * @param username The name that needs to be fetched. Use user1 for testing.
-   */
 
   @endpointInput("/user/{username}")
   case class GetUserByNameInput (
@@ -195,34 +170,19 @@ object UserApi {
     val endpointOutput: EndpointOutput[GetUserByNameOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 200 : User (successful operation)
+   *   code 400 :  (Invalid username supplied)
+   *   code 404 :  (User not found)
+   * 
+   * @param username The name that needs to be fetched. Use user1 for testing.
+   */
   
   val getUserByName = endpoint
       .method(Method.GET)
       .in(GetUserByNameInput.endpointInput)
       .out(GetUserByNameOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[GetUserByNameError](-->
-<!--          -->
-<!--              -->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400))),-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(404)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Expected answers:
-   *   code 200 : String (successful operation)
-   *              Headers :
-   *                Set-Cookie - Cookie authentication key for use with the `api_key` apiKey authentication.
-   *                X-Rate-Limit - calls per hour allowed by the user
-   *                X-Expires-After - date in UTC when token expires
-   *   code 400 :  (Invalid username/password supplied)
-   * 
-   * @param username The user name for login
-   * @param password The password for login in clear text
-   */
 
   @endpointInput("/user/login")
   case class LoginUserInput (
@@ -243,27 +203,23 @@ object UserApi {
     val endpointOutput: EndpointOutput[LoginUserOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 200 : String (successful operation)
+   *              Headers :
+   *                Set-Cookie - Cookie authentication key for use with the `api_key` apiKey authentication.
+   *                X-Rate-Limit - calls per hour allowed by the user
+   *                X-Expires-After - date in UTC when token expires
+   *   code 400 :  (Invalid username/password supplied)
+   * 
+   * @param username The user name for login
+   * @param password The password for login in clear text
+   */
   
   val loginUser = endpoint
       .method(Method.GET)
       .in(LoginUserInput.endpointInput)
       .out(LoginUserOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[LoginUserError](-->
-<!--          -->
-<!--              -->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Expected answers:
-   *   code 0 :  (successful operation)
-   * 
-   * Available security schemes:
-   *   api_key (apiKey)
-   */
 
   @endpointInput("/user/logout")
   case class LogoutUserInput (
@@ -278,31 +234,18 @@ object UserApi {
     val endpointOutput: EndpointOutput[LogoutUserOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 0 :  (successful operation)
+   * 
+   * Available security schemes:
+   *   api_key (apiKey)
+   */
   
   val logoutUser = endpoint
       .method(Method.GET)
       .in(LogoutUserInput.endpointInput)
       .out(LogoutUserOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[LogoutUserError](-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(0)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * This can only be done by the logged in user.
-   * 
-   * Expected answers:
-   *   code 400 :  (Invalid user supplied)
-   *   code 404 :  (User not found)
-   * 
-   * Available security schemes:
-   *   api_key (apiKey)
-   * 
-   * @param username name that need to be deleted
-   * @param user Updated user object
-   */
 
   @endpointInput("/user/{username}")
   case class UpdateUserInput (
@@ -319,18 +262,54 @@ object UserApi {
     val endpointOutput: EndpointOutput[UpdateUserOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       This can only be done by the logged in user.
+   * 
+   * Expected answers:
+   *   code 400 :  (Invalid user supplied)
+   *   code 404 :  (User not found)
+   * 
+   * Available security schemes:
+   *   api_key (apiKey)
+   * 
+   * @param username name that need to be deleted
+   * @param user Updated user object
+   */
   
   val updateUser = endpoint
       .method(Method.PUT)
       .in(UpdateUserInput.endpointInput)
       .out(UpdateUserOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[UpdateUserError](-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400))),-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(404)))-->
-<!--          -->
-<!--       ))-->
-<!---->
+
+
+  def bind[F[_]](t: UserApi[F]) = Seq(
+    createUser.serverLogic(t.createUser),
+    createUsersWithArrayInput.serverLogic(t.createUsersWithArrayInput),
+    createUsersWithListInput.serverLogic(t.createUsersWithListInput),
+    deleteUser.serverLogic(t.deleteUser),
+    getUserByName.serverLogic(t.getUserByName),
+    loginUser.serverLogic(t.loginUser),
+    logoutUser.serverLogic(t.logoutUser),
+    updateUser.serverLogic(t.updateUser)
+  )
+
+  def stub[F[_], P](url: Option[Uri], interpeter: SttpClientInterpreter, backend: SttpBackend[F, P]): UserApi[F] = new UserApi[F]{
+    override def createUser(input: CreateUserInput): F[Either[Unit,CreateUserOutput]] = createUserClient(input)
+    override def createUsersWithArrayInput(input: CreateUsersWithArrayInputInput): F[Either[Unit,CreateUsersWithArrayInputOutput]] = createUsersWithArrayInputClient(input)
+    override def createUsersWithListInput(input: CreateUsersWithListInputInput): F[Either[Unit,CreateUsersWithListInputOutput]] = createUsersWithListInputClient(input)
+    override def deleteUser(input: DeleteUserInput): F[Either[Unit,DeleteUserOutput]] = deleteUserClient(input)
+    override def getUserByName(input: GetUserByNameInput): F[Either[Unit,GetUserByNameOutput]] = getUserByNameClient(input)
+    override def loginUser(input: LoginUserInput): F[Either[Unit,LoginUserOutput]] = loginUserClient(input)
+    override def logoutUser(input: LogoutUserInput): F[Either[Unit,LogoutUserOutput]] = logoutUserClient(input)
+    override def updateUser(input: UpdateUserInput): F[Either[Unit,UpdateUserOutput]] = updateUserClient(input)
+
+    private val createUserClient = interpeter.toClientThrowDecodeFailures(UserApi.createUser, url, backend)
+    private val createUsersWithArrayInputClient = interpeter.toClientThrowDecodeFailures(UserApi.createUsersWithArrayInput, url, backend)
+    private val createUsersWithListInputClient = interpeter.toClientThrowDecodeFailures(UserApi.createUsersWithListInput, url, backend)
+    private val deleteUserClient = interpeter.toClientThrowDecodeFailures(UserApi.deleteUser, url, backend)
+    private val getUserByNameClient = interpeter.toClientThrowDecodeFailures(UserApi.getUserByName, url, backend)
+    private val loginUserClient = interpeter.toClientThrowDecodeFailures(UserApi.loginUser, url, backend)
+    private val logoutUserClient = interpeter.toClientThrowDecodeFailures(UserApi.logoutUser, url, backend)
+    private val updateUserClient = interpeter.toClientThrowDecodeFailures(UserApi.updateUser, url, backend)
+  }
 }

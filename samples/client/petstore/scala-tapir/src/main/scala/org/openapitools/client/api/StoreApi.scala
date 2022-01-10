@@ -11,25 +11,29 @@
  */
 package org.openapitools.client.api
 
+import org.http4s.HttpRoutes
 import org.openapitools.client.model.Order
 import org.openapitools.client.core.JsonSupport._
 import sttp.tapir._
 import sttp.tapir.EndpointIO.annotations._
 import sttp.model._
+
 import scala.deprecated
+import sttp.client3.SttpBackend
+import sttp.tapir.client.sttp.SttpClientInterpreter
+import sttp.tapir.server.ServerEndpoint
+import sttp.tapir.server.http4s.Http4sServerInterpreter
+
+trait StoreApi[F[_]] {
+  import StoreApi._
+  def deleteOrder(input: DeleteOrderInput): F[Either[Unit,DeleteOrderOutput]]
+  def getInventory(input: GetInventoryInput): F[Either[Unit,GetInventoryOutput]]
+  def getOrderById(input: GetOrderByIdInput): F[Either[Unit,GetOrderByIdOutput]]
+  def placeOrder(input: PlaceOrderInput): F[Either[Unit,PlaceOrderOutput]]
+}
 
 object StoreApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
-  /**
-   * For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
-   * 
-   * Expected answers:
-   *   code 400 :  (Invalid ID supplied)
-   *   code 404 :  (Order not found)
-   * 
-   * @param orderId ID of the order that needs to be deleted
-   */
-
   @endpointInput("/store/order/{orderId}")
   case class DeleteOrderInput (
      @path orderId: String
@@ -44,29 +48,20 @@ object StoreApi {
     val endpointOutput: EndpointOutput[DeleteOrderOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
+   * 
+   * Expected answers:
+   *   code 400 :  (Invalid ID supplied)
+   *   code 404 :  (Order not found)
+   * 
+   * @param orderId ID of the order that needs to be deleted
+   */
   
   val deleteOrder = endpoint
       .method(Method.DELETE)
       .in(DeleteOrderInput.endpointInput)
       .out(DeleteOrderOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[DeleteOrderError](-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400))),-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(404)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Returns a map of status codes to quantities
-   * 
-   * Expected answers:
-   *   code 200 : Map[String, Int] (successful operation)
-   * 
-   * Available security schemes:
-   *   api_key (apiKey)
-   */
 
   @endpointInput("/store/inventory")
   case class GetInventoryInput (
@@ -82,22 +77,20 @@ object StoreApi {
     val endpointOutput: EndpointOutput[GetInventoryOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Returns a map of status codes to quantities
+   * 
+   * Expected answers:
+   *   code 200 : Map[String, Int] (successful operation)
+   * 
+   * Available security schemes:
+   *   api_key (apiKey)
+   */
   
   val getInventory = endpoint
       .method(Method.GET)
       .in(GetInventoryInput.endpointInput)
       .out(GetInventoryOutput.endpointOutput)
-<!---->
-  /**
-   * For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions
-   * 
-   * Expected answers:
-   *   code 200 : Order (successful operation)
-   *   code 400 :  (Invalid ID supplied)
-   *   code 404 :  (Order not found)
-   * 
-   * @param orderId ID of pet that needs to be fetched
-   */
 
   @endpointInput("/store/order/{orderId}")
   case class GetOrderByIdInput (
@@ -114,29 +107,21 @@ object StoreApi {
     val endpointOutput: EndpointOutput[GetOrderByIdOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions
+   * 
+   * Expected answers:
+   *   code 200 : Order (successful operation)
+   *   code 400 :  (Invalid ID supplied)
+   *   code 404 :  (Order not found)
+   * 
+   * @param orderId ID of pet that needs to be fetched
+   */
   
   val getOrderById = endpoint
       .method(Method.GET)
       .in(GetOrderByIdInput.endpointInput)
       .out(GetOrderByIdOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[GetOrderByIdError](-->
-<!--          -->
-<!--              -->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400))),-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(404)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Expected answers:
-   *   code 200 : Order (successful operation)
-   *   code 400 :  (Invalid Order)
-   * 
-   * @param order order placed for purchasing the pet
-   */
 
   @endpointInput("/store/order")
   case class PlaceOrderInput (
@@ -153,18 +138,38 @@ object StoreApi {
     val endpointOutput: EndpointOutput[PlaceOrderOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 200 : Order (successful operation)
+   *   code 400 :  (Invalid Order)
+   * 
+   * @param order order placed for purchasing the pet
+   */
   
   val placeOrder = endpoint
       .method(Method.POST)
       .in(PlaceOrderInput.endpointInput)
       .out(PlaceOrderOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[PlaceOrderError](-->
-<!--          -->
-<!--              -->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400)))-->
-<!--          -->
-<!--       ))-->
-<!---->
+
+
+  def bind[F[_]](t: StoreApi[F], http: Http4sServerInterpreter[F]) =
+      List(
+        deleteOrder.serverLogic(t.deleteOrder),
+        getInventory.serverLogic(t.getInventory),
+        getOrderById.serverLogic(t.getOrderById),
+        placeOrder.serverLogic(t.placeOrder)
+      )
+  )
+
+  def stub[F[_], P](url: Option[Uri], interpeter: SttpClientInterpreter, backend: SttpBackend[F, P]): StoreApi[F] = new StoreApi[F]{
+    override def deleteOrder(input: DeleteOrderInput): F[Either[Unit,DeleteOrderOutput]] = deleteOrderClient(input)
+    override def getInventory(input: GetInventoryInput): F[Either[Unit,GetInventoryOutput]] = getInventoryClient(input)
+    override def getOrderById(input: GetOrderByIdInput): F[Either[Unit,GetOrderByIdOutput]] = getOrderByIdClient(input)
+    override def placeOrder(input: PlaceOrderInput): F[Either[Unit,PlaceOrderOutput]] = placeOrderClient(input)
+
+    private val deleteOrderClient = interpeter.toClientThrowDecodeFailures(StoreApi.deleteOrder, url, backend)
+    private val getInventoryClient = interpeter.toClientThrowDecodeFailures(StoreApi.getInventory, url, backend)
+    private val getOrderByIdClient = interpeter.toClientThrowDecodeFailures(StoreApi.getOrderById, url, backend)
+    private val placeOrderClient = interpeter.toClientThrowDecodeFailures(StoreApi.placeOrder, url, backend)
+  }
 }

@@ -24,7 +24,9 @@ libraryDependencies ++= Seq(
   "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"   % "{{jsoniterVersion}}",
   "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "{{jsoniterVersion}}" % "compile-internal",
 {{/jsoniter}}
-  "com.softwaremill.sttp.tapir" %% "tapir-core" % "{{tapirVersion}}"
+  "com.softwaremill.sttp.tapir" %% "tapir-core" % "{{tapirVersion}}",
+  "com.softwaremill.sttp.tapir" %% "tapir-sttp-client" % "{{tapirVersion}}",
+  "com.softwaremill.sttp.tapir" %% "tapir-http4s-server" % "{{tapirVersion}}"
 )
 
 scalacOptions := Seq(

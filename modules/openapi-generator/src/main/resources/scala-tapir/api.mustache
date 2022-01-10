@@ -9,15 +9,20 @@ import sttp.tapir._
 import sttp.tapir.EndpointIO.annotations._
 import sttp.model._
 import scala.deprecated
+import sttp.client3.SttpBackend
+import sttp.tapir.client.sttp.SttpClientInterpreter
 
 {{#operations}}
+trait {{classname}}[F[_]] {
+  import {{classname}}._
+{{#operation}}
+  def {{operationId}}(input: {{operationIdCamelCase}}Input): F[Either[Unit,{{operationIdCamelCase}}Output]]
+{{/operation}}
+}
+
 object {{classname}} {
   val baseUrl: String = "{{{basePath}}}"
 {{#operation}}
-{{#javadocRenderer}}
-{{>javadoc}}
-{{/javadocRenderer}}
-
   @endpointInput("{{{path}}}")
   case class {{operationIdCamelCase}}Input (
   {{#authMethods}}
@@ -50,18 +55,30 @@ object {{classname}} {
     val endpointOutput: EndpointOutput[{{operationIdCamelCase}}Output] = EndpointOutput.derived
   }
 
+  {{#javadocRenderer}}
+      {{>javadoc}}
+  {{/javadocRenderer}}
   {{#isDeprecated}}@deprecated{{/isDeprecated}}
   val {{operationId}} = endpoint
       .method(Method.{{httpMethod.toUpperCase}})
       .in({{operationIdCamelCase}}Input.endpointInput)
       .out({{operationIdCamelCase}}Output.endpointOutput)
-{{#hasErrorResponses}}
-      .errorOut(oneOf[{{operationIdCamelCase}}Error](
-          {{#responses}}
-              {{^is2xx}}oneOfVariant(statusCode(StatusCode({{code}})){{#dataType}}.and(jsonBody[{{dataType}}]){{/dataType}}){{^-last}},{{/-last}}{{/is2xx}}
-          {{/responses}}
-       ))
-{{/hasErrorResponses}}
+
 {{/operation}}
+
+  def bind[F[_]](t: {{classname}}[F]) = Seq(
+{{#operation}}    {{operationId}}.serverLogic(t.{{operationId}}){{^-last}},{{/-last}}
+{{/operation}}
+  )
+
+  def stub[F[_], P](url: Option[Uri], interpeter: SttpClientInterpreter, backend: SttpBackend[F, P]): {{classname}}[F] = new {{classname}}[F]{
+{{#operation}}
+    override def {{operationId}}(input: {{operationIdCamelCase}}Input): F[Either[Unit,{{operationIdCamelCase}}Output]] = {{operationId}}Client(input)
+{{/operation}}
+
+{{#operation}}
+    private val {{operationId}}Client = interpeter.toClientThrowDecodeFailures({{classname}}.{{operationId}}, url, backend)
+{{/operation}}
+  }
 }
 {{/operations}}

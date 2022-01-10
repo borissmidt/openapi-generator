@@ -19,17 +19,23 @@ import sttp.tapir._
 import sttp.tapir.EndpointIO.annotations._
 import sttp.model._
 import scala.deprecated
+import sttp.client3.SttpBackend
+import sttp.tapir.client.sttp.SttpClientInterpreter
+
+trait PetApi[F[_]] {
+  import PetApi._
+  def addPet(input: AddPetInput): F[Either[Unit,AddPetOutput]]
+  def deletePet(input: DeletePetInput): F[Either[Unit,DeletePetOutput]]
+  def findPetsByStatus(input: FindPetsByStatusInput): F[Either[Unit,FindPetsByStatusOutput]]
+  def findPetsByTags(input: FindPetsByTagsInput): F[Either[Unit,FindPetsByTagsOutput]]
+  def getPetById(input: GetPetByIdInput): F[Either[Unit,GetPetByIdOutput]]
+  def updatePet(input: UpdatePetInput): F[Either[Unit,UpdatePetOutput]]
+  def updatePetWithForm(input: UpdatePetWithFormInput): F[Either[Unit,UpdatePetWithFormOutput]]
+  def uploadFile(input: UploadFileInput): F[Either[Unit,UploadFileOutput]]
+}
 
 object PetApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
-  /**
-   * Expected answers:
-   *   code 200 : Pet (successful operation)
-   *   code 405 :  (Invalid input)
-   * 
-   * @param pet Pet object that needs to be added to the store
-   */
-
   @endpointInput("/pet")
   case class AddPetInput (
      @jsonbody pet: Pet
@@ -45,27 +51,18 @@ object PetApi {
     val endpointOutput: EndpointOutput[AddPetOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 200 : Pet (successful operation)
+   *   code 405 :  (Invalid input)
+   * 
+   * @param pet Pet object that needs to be added to the store
+   */
   
   val addPet = endpoint
       .method(Method.POST)
       .in(AddPetInput.endpointInput)
       .out(AddPetOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[AddPetError](-->
-<!--          -->
-<!--              -->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(405)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Expected answers:
-   *   code 400 :  (Invalid pet value)
-   * 
-   * @param petId Pet id to delete
-   * @param apiKey 
-   */
 
   @endpointInput("/pet/{petId}")
   case class DeletePetInput (
@@ -82,27 +79,18 @@ object PetApi {
     val endpointOutput: EndpointOutput[DeletePetOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 400 :  (Invalid pet value)
+   * 
+   * @param petId Pet id to delete
+   * @param apiKey 
+   */
   
   val deletePet = endpoint
       .method(Method.DELETE)
       .in(DeletePetInput.endpointInput)
       .out(DeletePetOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[DeletePetError](-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Multiple status values can be provided with comma separated strings
-   * 
-   * Expected answers:
-   *   code 200 : Seq[Pet] (successful operation)
-   *   code 400 :  (Invalid status value)
-   * 
-   * @param status Status values that need to be considered for filter
-   */
 
   @endpointInput("/pet/findByStatus")
   case class FindPetsByStatusInput (
@@ -119,29 +107,20 @@ object PetApi {
     val endpointOutput: EndpointOutput[FindPetsByStatusOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Multiple status values can be provided with comma separated strings
+   * 
+   * Expected answers:
+   *   code 200 : Seq[Pet] (successful operation)
+   *   code 400 :  (Invalid status value)
+   * 
+   * @param status Status values that need to be considered for filter
+   */
   
   val findPetsByStatus = endpoint
       .method(Method.GET)
       .in(FindPetsByStatusInput.endpointInput)
       .out(FindPetsByStatusOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[FindPetsByStatusError](-->
-<!--          -->
-<!--              -->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
-   * 
-   * Expected answers:
-   *   code 200 : Seq[Pet] (successful operation)
-   *   code 400 :  (Invalid tag value)
-   * 
-   * @param tags Tags to filter by
-   */
 
   @endpointInput("/pet/findByTags")
   case class FindPetsByTagsInput (
@@ -158,33 +137,20 @@ object PetApi {
     val endpointOutput: EndpointOutput[FindPetsByTagsOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
+   * 
+   * Expected answers:
+   *   code 200 : Seq[Pet] (successful operation)
+   *   code 400 :  (Invalid tag value)
+   * 
+   * @param tags Tags to filter by
+   */
   
   val findPetsByTags = endpoint
       .method(Method.GET)
       .in(FindPetsByTagsInput.endpointInput)
       .out(FindPetsByTagsOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[FindPetsByTagsError](-->
-<!--          -->
-<!--              -->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Returns a single pet
-   * 
-   * Expected answers:
-   *   code 200 : Pet (successful operation)
-   *   code 400 :  (Invalid ID supplied)
-   *   code 404 :  (Pet not found)
-   * 
-   * Available security schemes:
-   *   api_key (apiKey)
-   * 
-   * @param petId ID of pet to return
-   */
 
   @endpointInput("/pet/{petId}")
   case class GetPetByIdInput (
@@ -201,31 +167,24 @@ object PetApi {
     val endpointOutput: EndpointOutput[GetPetByIdOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Returns a single pet
+   * 
+   * Expected answers:
+   *   code 200 : Pet (successful operation)
+   *   code 400 :  (Invalid ID supplied)
+   *   code 404 :  (Pet not found)
+   * 
+   * Available security schemes:
+   *   api_key (apiKey)
+   * 
+   * @param petId ID of pet to return
+   */
   
   val getPetById = endpoint
       .method(Method.GET)
       .in(GetPetByIdInput.endpointInput)
       .out(GetPetByIdOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[GetPetByIdError](-->
-<!--          -->
-<!--              -->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400))),-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(404)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Expected answers:
-   *   code 200 : Pet (successful operation)
-   *   code 400 :  (Invalid ID supplied)
-   *   code 404 :  (Pet not found)
-   *   code 405 :  (Validation exception)
-   * 
-   * @param pet Pet object that needs to be added to the store
-   */
 
   @endpointInput("/pet")
   case class UpdatePetInput (
@@ -242,32 +201,20 @@ object PetApi {
     val endpointOutput: EndpointOutput[UpdatePetOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 200 : Pet (successful operation)
+   *   code 400 :  (Invalid ID supplied)
+   *   code 404 :  (Pet not found)
+   *   code 405 :  (Validation exception)
+   * 
+   * @param pet Pet object that needs to be added to the store
+   */
   
   val updatePet = endpoint
       .method(Method.PUT)
       .in(UpdatePetInput.endpointInput)
       .out(UpdatePetOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[UpdatePetError](-->
-<!--          -->
-<!--              -->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(400))),-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(404))),-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(405)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Expected answers:
-   *   code 405 :  (Invalid input)
-   * 
-   * @param petId ID of pet that needs to be updated
-   * @param name Updated name of the pet
-   * @param status Updated status of the pet
-   */
 
   @endpointInput("/pet/{petId}")
   case class UpdatePetWithFormInput (
@@ -285,26 +232,19 @@ object PetApi {
     val endpointOutput: EndpointOutput[UpdatePetWithFormOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 405 :  (Invalid input)
+   * 
+   * @param petId ID of pet that needs to be updated
+   * @param name Updated name of the pet
+   * @param status Updated status of the pet
+   */
   
   val updatePetWithForm = endpoint
       .method(Method.POST)
       .in(UpdatePetWithFormInput.endpointInput)
       .out(UpdatePetWithFormOutput.endpointOutput)
-<!---->
-<!--      .errorOut(oneOf[UpdatePetWithFormError](-->
-<!--          -->
-<!--              oneOfVariant(statusCode(StatusCode(405)))-->
-<!--          -->
-<!--       ))-->
-<!---->
-  /**
-   * Expected answers:
-   *   code 200 : ApiResponse (successful operation)
-   * 
-   * @param petId ID of pet to update
-   * @param additionalMetadata Additional data to pass to server
-   * @param file file to upload
-   */
 
   @endpointInput("/pet/{petId}/uploadImage")
   case class UploadFileInput (
@@ -323,10 +263,49 @@ object PetApi {
     val endpointOutput: EndpointOutput[UploadFileOutput] = EndpointOutput.derived
   }
 
+  /**
+   *       Expected answers:
+   *   code 200 : ApiResponse (successful operation)
+   * 
+   * @param petId ID of pet to update
+   * @param additionalMetadata Additional data to pass to server
+   * @param file file to upload
+   */
   
   val uploadFile = endpoint
       .method(Method.POST)
       .in(UploadFileInput.endpointInput)
       .out(UploadFileOutput.endpointOutput)
-<!---->
+
+
+  def bind[F[_]](t: PetApi[F]) = Seq(
+    addPet.serverLogic(t.addPet),
+    deletePet.serverLogic(t.deletePet),
+    findPetsByStatus.serverLogic(t.findPetsByStatus),
+    findPetsByTags.serverLogic(t.findPetsByTags),
+    getPetById.serverLogic(t.getPetById),
+    updatePet.serverLogic(t.updatePet),
+    updatePetWithForm.serverLogic(t.updatePetWithForm),
+    uploadFile.serverLogic(t.uploadFile)
+  )
+
+  def stub[F[_], P](url: Option[Uri], interpeter: SttpClientInterpreter, backend: SttpBackend[F, P]): PetApi[F] = new PetApi[F]{
+    override def addPet(input: AddPetInput): F[Either[Unit,AddPetOutput]] = addPetClient(input)
+    override def deletePet(input: DeletePetInput): F[Either[Unit,DeletePetOutput]] = deletePetClient(input)
+    override def findPetsByStatus(input: FindPetsByStatusInput): F[Either[Unit,FindPetsByStatusOutput]] = findPetsByStatusClient(input)
+    override def findPetsByTags(input: FindPetsByTagsInput): F[Either[Unit,FindPetsByTagsOutput]] = findPetsByTagsClient(input)
+    override def getPetById(input: GetPetByIdInput): F[Either[Unit,GetPetByIdOutput]] = getPetByIdClient(input)
+    override def updatePet(input: UpdatePetInput): F[Either[Unit,UpdatePetOutput]] = updatePetClient(input)
+    override def updatePetWithForm(input: UpdatePetWithFormInput): F[Either[Unit,UpdatePetWithFormOutput]] = updatePetWithFormClient(input)
+    override def uploadFile(input: UploadFileInput): F[Either[Unit,UploadFileOutput]] = uploadFileClient(input)
+
+    private val addPetClient = interpeter.toClientThrowDecodeFailures(PetApi.addPet, url, backend)
+    private val deletePetClient = interpeter.toClientThrowDecodeFailures(PetApi.deletePet, url, backend)
+    private val findPetsByStatusClient = interpeter.toClientThrowDecodeFailures(PetApi.findPetsByStatus, url, backend)
+    private val findPetsByTagsClient = interpeter.toClientThrowDecodeFailures(PetApi.findPetsByTags, url, backend)
+    private val getPetByIdClient = interpeter.toClientThrowDecodeFailures(PetApi.getPetById, url, backend)
+    private val updatePetClient = interpeter.toClientThrowDecodeFailures(PetApi.updatePet, url, backend)
+    private val updatePetWithFormClient = interpeter.toClientThrowDecodeFailures(PetApi.updatePetWithForm, url, backend)
+    private val uploadFileClient = interpeter.toClientThrowDecodeFailures(PetApi.uploadFile, url, backend)
+  }
 }
