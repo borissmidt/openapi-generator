@@ -16,6 +16,7 @@ import org.openapitools.client.core.JsonSupport._
 import sttp.tapir._
 import sttp.tapir.EndpointIO.annotations._
 import sttp.model._
+import scala.deprecated
 
 object UserApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
@@ -33,23 +34,30 @@ object UserApi {
 
   @endpointInput("/user")
   case class CreateUserInput (
-    @jsonbody user: User,
+     @jsonbody user: User
   )
 
   object CreateUserInput{
     val endpointInput: EndpointInput[CreateUserInput] = EndpointInput.derived
   }
 
-
+  case class CreateUserOutput()
   object CreateUserOutput{
     val endpointOutput: EndpointOutput[CreateUserOutput] = EndpointOutput.derived
   }
 
+  
   val createUser = endpoint
       .method(Method.POST)
       .in(CreateUserInput.endpointInput)
       .out(CreateUserOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[CreateUserError](-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(0)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 0 :  (successful operation)
@@ -62,23 +70,30 @@ object UserApi {
 
   @endpointInput("/user/createWithArray")
   case class CreateUsersWithArrayInputInput (
-    @jsonbody user: Seq[User],
+     @jsonbody user: Seq[User]
   )
 
   object CreateUsersWithArrayInputInput{
     val endpointInput: EndpointInput[CreateUsersWithArrayInputInput] = EndpointInput.derived
   }
 
-
+  case class CreateUsersWithArrayInputOutput()
   object CreateUsersWithArrayInputOutput{
     val endpointOutput: EndpointOutput[CreateUsersWithArrayInputOutput] = EndpointOutput.derived
   }
 
+  
   val createUsersWithArrayInput = endpoint
       .method(Method.POST)
       .in(CreateUsersWithArrayInputInput.endpointInput)
       .out(CreateUsersWithArrayInputOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[CreateUsersWithArrayInputError](-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(0)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 0 :  (successful operation)
@@ -91,23 +106,30 @@ object UserApi {
 
   @endpointInput("/user/createWithList")
   case class CreateUsersWithListInputInput (
-    @jsonbody user: Seq[User],
+     @jsonbody user: Seq[User]
   )
 
   object CreateUsersWithListInputInput{
     val endpointInput: EndpointInput[CreateUsersWithListInputInput] = EndpointInput.derived
   }
 
-
+  case class CreateUsersWithListInputOutput()
   object CreateUsersWithListInputOutput{
     val endpointOutput: EndpointOutput[CreateUsersWithListInputOutput] = EndpointOutput.derived
   }
 
+  
   val createUsersWithListInput = endpoint
       .method(Method.POST)
       .in(CreateUsersWithListInputInput.endpointInput)
       .out(CreateUsersWithListInputOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[CreateUsersWithListInputError](-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(0)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * This can only be done by the logged in user.
    * 
@@ -123,23 +145,32 @@ object UserApi {
 
   @endpointInput("/user/{username}")
   case class DeleteUserInput (
-    @path username: String,
+     @path username: String
   )
 
   object DeleteUserInput{
     val endpointInput: EndpointInput[DeleteUserInput] = EndpointInput.derived
   }
 
-
+  case class DeleteUserOutput()
   object DeleteUserOutput{
     val endpointOutput: EndpointOutput[DeleteUserOutput] = EndpointOutput.derived
   }
 
+  
   val deleteUser = endpoint
       .method(Method.DELETE)
       .in(DeleteUserInput.endpointInput)
       .out(DeleteUserOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[DeleteUserError](-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400))),-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(404)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 200 : User (successful operation)
@@ -151,26 +182,35 @@ object UserApi {
 
   @endpointInput("/user/{username}")
   case class GetUserByNameInput (
-    @path username: String,
+     @path username: String
   )
 
   object GetUserByNameInput{
     val endpointInput: EndpointInput[GetUserByNameInput] = EndpointInput.derived
   }
 
-  case class GetUserByNameOutput (
-    @jsonbody body : Option[User],
-  )
-
+  case class GetUserByNameOutput(
+    @jsonbody body : Option[User]=None,)
   object GetUserByNameOutput{
     val endpointOutput: EndpointOutput[GetUserByNameOutput] = EndpointOutput.derived
   }
 
+  
   val getUserByName = endpoint
       .method(Method.GET)
       .in(GetUserByNameInput.endpointInput)
       .out(GetUserByNameOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[GetUserByNameError](-->
+<!--          -->
+<!--              -->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400))),-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(404)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 200 : String (successful operation)
@@ -186,30 +226,37 @@ object UserApi {
 
   @endpointInput("/user/login")
   case class LoginUserInput (
-    @query username: String,
-    @query password: String,
+     @query username: String,
+     @query password: String
   )
 
   object LoginUserInput{
     val endpointInput: EndpointInput[LoginUserInput] = EndpointInput.derived
   }
 
-  case class LoginUserOutput (
-    @header : Option[String],
-    @header : Option[Int],
-    @header : Option[OffsetDateTime],
-    @jsonbody body : Option[String],
-  )
-
+  case class LoginUserOutput(
+    @header : Option[String]=None,
+    @header : Option[Int]=None,
+    @header : Option[OffsetDateTime]=None
+    @jsonbody body : Option[String]=None,)
   object LoginUserOutput{
     val endpointOutput: EndpointOutput[LoginUserOutput] = EndpointOutput.derived
   }
 
+  
   val loginUser = endpoint
       .method(Method.GET)
       .in(LoginUserInput.endpointInput)
       .out(LoginUserOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[LoginUserError](-->
+<!--          -->
+<!--              -->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 0 :  (successful operation)
@@ -226,16 +273,23 @@ object UserApi {
     val endpointInput: EndpointInput[LogoutUserInput] = EndpointInput.derived
   }
 
-
+  case class LogoutUserOutput()
   object LogoutUserOutput{
     val endpointOutput: EndpointOutput[LogoutUserOutput] = EndpointOutput.derived
   }
 
+  
   val logoutUser = endpoint
       .method(Method.GET)
       .in(LogoutUserInput.endpointInput)
       .out(LogoutUserOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[LogoutUserError](-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(0)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * This can only be done by the logged in user.
    * 
@@ -252,22 +306,31 @@ object UserApi {
 
   @endpointInput("/user/{username}")
   case class UpdateUserInput (
-    @path username: String,
-    @jsonbody user: User,
+     @path username: String,
+     @jsonbody user: User
   )
 
   object UpdateUserInput{
     val endpointInput: EndpointInput[UpdateUserInput] = EndpointInput.derived
   }
 
-
+  case class UpdateUserOutput()
   object UpdateUserOutput{
     val endpointOutput: EndpointOutput[UpdateUserOutput] = EndpointOutput.derived
   }
 
+  
   val updateUser = endpoint
       .method(Method.PUT)
       .in(UpdateUserInput.endpointInput)
       .out(UpdateUserOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[UpdateUserError](-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400))),-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(404)))-->
+<!--          -->
+<!--       ))-->
+<!---->
 }

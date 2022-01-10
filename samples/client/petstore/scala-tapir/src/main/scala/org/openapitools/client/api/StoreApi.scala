@@ -16,6 +16,7 @@ import org.openapitools.client.core.JsonSupport._
 import sttp.tapir._
 import sttp.tapir.EndpointIO.annotations._
 import sttp.model._
+import scala.deprecated
 
 object StoreApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
@@ -31,23 +32,32 @@ object StoreApi {
 
   @endpointInput("/store/order/{orderId}")
   case class DeleteOrderInput (
-    @path orderId: String,
+     @path orderId: String
   )
 
   object DeleteOrderInput{
     val endpointInput: EndpointInput[DeleteOrderInput] = EndpointInput.derived
   }
 
-
+  case class DeleteOrderOutput()
   object DeleteOrderOutput{
     val endpointOutput: EndpointOutput[DeleteOrderOutput] = EndpointOutput.derived
   }
 
+  
   val deleteOrder = endpoint
       .method(Method.DELETE)
       .in(DeleteOrderInput.endpointInput)
       .out(DeleteOrderOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[DeleteOrderError](-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400))),-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(404)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Returns a map of status codes to quantities
    * 
@@ -66,19 +76,18 @@ object StoreApi {
     val endpointInput: EndpointInput[GetInventoryInput] = EndpointInput.derived
   }
 
-  case class GetInventoryOutput (
-    @jsonbody body : Option[Map[String, Int]],
-  )
-
+  case class GetInventoryOutput(
+    @jsonbody body : Option[Map[String, Int]]=None)
   object GetInventoryOutput{
     val endpointOutput: EndpointOutput[GetInventoryOutput] = EndpointOutput.derived
   }
 
+  
   val getInventory = endpoint
       .method(Method.GET)
       .in(GetInventoryInput.endpointInput)
       .out(GetInventoryOutput.endpointOutput)
-
+<!---->
   /**
    * For valid response try integer IDs with value <= 5 or > 10. Other values will generated exceptions
    * 
@@ -92,26 +101,35 @@ object StoreApi {
 
   @endpointInput("/store/order/{orderId}")
   case class GetOrderByIdInput (
-    @path orderId: Long,
+     @path orderId: Long
   )
 
   object GetOrderByIdInput{
     val endpointInput: EndpointInput[GetOrderByIdInput] = EndpointInput.derived
   }
 
-  case class GetOrderByIdOutput (
-    @jsonbody body : Option[Order],
-  )
-
+  case class GetOrderByIdOutput(
+    @jsonbody body : Option[Order]=None,)
   object GetOrderByIdOutput{
     val endpointOutput: EndpointOutput[GetOrderByIdOutput] = EndpointOutput.derived
   }
 
+  
   val getOrderById = endpoint
       .method(Method.GET)
       .in(GetOrderByIdInput.endpointInput)
       .out(GetOrderByIdOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[GetOrderByIdError](-->
+<!--          -->
+<!--              -->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400))),-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(404)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 200 : Order (successful operation)
@@ -122,24 +140,31 @@ object StoreApi {
 
   @endpointInput("/store/order")
   case class PlaceOrderInput (
-    @jsonbody order: Order,
+     @jsonbody order: Order
   )
 
   object PlaceOrderInput{
     val endpointInput: EndpointInput[PlaceOrderInput] = EndpointInput.derived
   }
 
-  case class PlaceOrderOutput (
-    @jsonbody body : Option[Order],
-  )
-
+  case class PlaceOrderOutput(
+    @jsonbody body : Option[Order]=None,)
   object PlaceOrderOutput{
     val endpointOutput: EndpointOutput[PlaceOrderOutput] = EndpointOutput.derived
   }
 
+  
   val placeOrder = endpoint
       .method(Method.POST)
       .in(PlaceOrderInput.endpointInput)
       .out(PlaceOrderOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[PlaceOrderError](-->
+<!--          -->
+<!--              -->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400)))-->
+<!--          -->
+<!--       ))-->
+<!---->
 }

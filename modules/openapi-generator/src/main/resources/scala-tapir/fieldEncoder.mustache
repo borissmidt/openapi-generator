@@ -1,1 +1,1 @@
-{{paramName}}: {{^required}}Option[{{/required}}{{dataType}}{{^required}}]{{/required}},
+{{#dataType}}{{paramName}}: {{^required}}Option[{{/required}}{{dataType}}{{^required}}]{{/required}}{{^required}}=None{{/required}}{{^-last}},{{/-last}}{{/dataType}}

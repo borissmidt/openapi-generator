@@ -18,6 +18,7 @@ import org.openapitools.client.core.JsonSupport._
 import sttp.tapir._
 import sttp.tapir.EndpointIO.annotations._
 import sttp.model._
+import scala.deprecated
 
 object PetApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
@@ -31,26 +32,33 @@ object PetApi {
 
   @endpointInput("/pet")
   case class AddPetInput (
-    @jsonbody pet: Pet,
+     @jsonbody pet: Pet
   )
 
   object AddPetInput{
     val endpointInput: EndpointInput[AddPetInput] = EndpointInput.derived
   }
 
-  case class AddPetOutput (
-    @jsonbody body : Option[Pet],
-  )
-
+  case class AddPetOutput(
+    @jsonbody body : Option[Pet]=None,)
   object AddPetOutput{
     val endpointOutput: EndpointOutput[AddPetOutput] = EndpointOutput.derived
   }
 
+  
   val addPet = endpoint
       .method(Method.POST)
       .in(AddPetInput.endpointInput)
       .out(AddPetOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[AddPetError](-->
+<!--          -->
+<!--              -->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(405)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 400 :  (Invalid pet value)
@@ -61,24 +69,31 @@ object PetApi {
 
   @endpointInput("/pet/{petId}")
   case class DeletePetInput (
-    @path petId: Long,
-    @header apiKey: Option[String],
+     @path petId: Long
+     @header apiKey: Option[String]=None
   )
 
   object DeletePetInput{
     val endpointInput: EndpointInput[DeletePetInput] = EndpointInput.derived
   }
 
-
+  case class DeletePetOutput()
   object DeletePetOutput{
     val endpointOutput: EndpointOutput[DeletePetOutput] = EndpointOutput.derived
   }
 
+  
   val deletePet = endpoint
       .method(Method.DELETE)
       .in(DeletePetInput.endpointInput)
       .out(DeletePetOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[DeletePetError](-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Multiple status values can be provided with comma separated strings
    * 
@@ -91,26 +106,33 @@ object PetApi {
 
   @endpointInput("/pet/findByStatus")
   case class FindPetsByStatusInput (
-    @query status: Seq[String],
+     @query status: Seq[String]
   )
 
   object FindPetsByStatusInput{
     val endpointInput: EndpointInput[FindPetsByStatusInput] = EndpointInput.derived
   }
 
-  case class FindPetsByStatusOutput (
-    @jsonbody body : Option[Seq[Pet]],
-  )
-
+  case class FindPetsByStatusOutput(
+    @jsonbody body : Option[Seq[Pet]]=None,)
   object FindPetsByStatusOutput{
     val endpointOutput: EndpointOutput[FindPetsByStatusOutput] = EndpointOutput.derived
   }
 
+  
   val findPetsByStatus = endpoint
       .method(Method.GET)
       .in(FindPetsByStatusInput.endpointInput)
       .out(FindPetsByStatusOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[FindPetsByStatusError](-->
+<!--          -->
+<!--              -->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
    * 
@@ -123,26 +145,33 @@ object PetApi {
 
   @endpointInput("/pet/findByTags")
   case class FindPetsByTagsInput (
-    @query tags: Seq[String],
+     @query tags: Seq[String]
   )
 
   object FindPetsByTagsInput{
     val endpointInput: EndpointInput[FindPetsByTagsInput] = EndpointInput.derived
   }
 
-  case class FindPetsByTagsOutput (
-    @jsonbody body : Option[Seq[Pet]],
-  )
-
+  case class FindPetsByTagsOutput(
+    @jsonbody body : Option[Seq[Pet]]=None,)
   object FindPetsByTagsOutput{
     val endpointOutput: EndpointOutput[FindPetsByTagsOutput] = EndpointOutput.derived
   }
 
+  
   val findPetsByTags = endpoint
       .method(Method.GET)
       .in(FindPetsByTagsInput.endpointInput)
       .out(FindPetsByTagsOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[FindPetsByTagsError](-->
+<!--          -->
+<!--              -->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Returns a single pet
    * 
@@ -159,26 +188,35 @@ object PetApi {
 
   @endpointInput("/pet/{petId}")
   case class GetPetByIdInput (
-    @path petId: Long,
+     @path petId: Long
   )
 
   object GetPetByIdInput{
     val endpointInput: EndpointInput[GetPetByIdInput] = EndpointInput.derived
   }
 
-  case class GetPetByIdOutput (
-    @jsonbody body : Option[Pet],
-  )
-
+  case class GetPetByIdOutput(
+    @jsonbody body : Option[Pet]=None,)
   object GetPetByIdOutput{
     val endpointOutput: EndpointOutput[GetPetByIdOutput] = EndpointOutput.derived
   }
 
+  
   val getPetById = endpoint
       .method(Method.GET)
       .in(GetPetByIdInput.endpointInput)
       .out(GetPetByIdOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[GetPetByIdError](-->
+<!--          -->
+<!--              -->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400))),-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(404)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 200 : Pet (successful operation)
@@ -191,26 +229,37 @@ object PetApi {
 
   @endpointInput("/pet")
   case class UpdatePetInput (
-    @jsonbody pet: Pet,
+     @jsonbody pet: Pet
   )
 
   object UpdatePetInput{
     val endpointInput: EndpointInput[UpdatePetInput] = EndpointInput.derived
   }
 
-  case class UpdatePetOutput (
-    @jsonbody body : Option[Pet],
-  )
-
+  case class UpdatePetOutput(
+    @jsonbody body : Option[Pet]=None,)
   object UpdatePetOutput{
     val endpointOutput: EndpointOutput[UpdatePetOutput] = EndpointOutput.derived
   }
 
+  
   val updatePet = endpoint
       .method(Method.PUT)
       .in(UpdatePetInput.endpointInput)
       .out(UpdatePetOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[UpdatePetError](-->
+<!--          -->
+<!--              -->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(400))),-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(404))),-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(405)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 405 :  (Invalid input)
@@ -222,23 +271,32 @@ object PetApi {
 
   @endpointInput("/pet/{petId}")
   case class UpdatePetWithFormInput (
-    @path petId: Long,
+     @path petId: Long
+      name: Option[String]=None,
+      status: Option[String]=None
   )
 
   object UpdatePetWithFormInput{
     val endpointInput: EndpointInput[UpdatePetWithFormInput] = EndpointInput.derived
   }
 
-
+  case class UpdatePetWithFormOutput()
   object UpdatePetWithFormOutput{
     val endpointOutput: EndpointOutput[UpdatePetWithFormOutput] = EndpointOutput.derived
   }
 
+  
   val updatePetWithForm = endpoint
       .method(Method.POST)
       .in(UpdatePetWithFormInput.endpointInput)
       .out(UpdatePetWithFormOutput.endpointOutput)
-
+<!---->
+<!--      .errorOut(oneOf[UpdatePetWithFormError](-->
+<!--          -->
+<!--              oneOfVariant(statusCode(StatusCode(405)))-->
+<!--          -->
+<!--       ))-->
+<!---->
   /**
    * Expected answers:
    *   code 200 : ApiResponse (successful operation)
@@ -250,24 +308,25 @@ object PetApi {
 
   @endpointInput("/pet/{petId}/uploadImage")
   case class UploadFileInput (
-    @path petId: Long,
+     @path petId: Long
+      additionalMetadata: Option[String]=None,
+      file: Option[File]=None
   )
 
   object UploadFileInput{
     val endpointInput: EndpointInput[UploadFileInput] = EndpointInput.derived
   }
 
-  case class UploadFileOutput (
-    @jsonbody body : Option[ApiResponse],
-  )
-
+  case class UploadFileOutput(
+    @jsonbody body : Option[ApiResponse]=None)
   object UploadFileOutput{
     val endpointOutput: EndpointOutput[UploadFileOutput] = EndpointOutput.derived
   }
 
+  
   val uploadFile = endpoint
       .method(Method.POST)
       .in(UploadFileInput.endpointInput)
       .out(UploadFileOutput.endpointOutput)
-
+<!---->
 }
