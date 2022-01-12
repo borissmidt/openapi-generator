@@ -27,6 +27,9 @@ case class Order(
   complete: Option[Boolean] = None
 )
 object Order{
+        import io.circe._, io.circe.generic.semiauto._
+        val encoder: Decoder[Order] = deriveDecoder[Order]
+        val decoder: Encoder[Order] = deriveEncoder[Order]
 
 
 }

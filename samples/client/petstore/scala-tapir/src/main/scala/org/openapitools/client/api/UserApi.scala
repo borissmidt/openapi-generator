@@ -19,6 +19,8 @@ import sttp.model._
 import scala.deprecated
 import sttp.client3.SttpBackend
 import sttp.tapir.client.sttp.SttpClientInterpreter
+import java.time._
+import sttp.tapir.generic.auto._
 
 trait UserApi[F[_]] {
   import UserApi._
@@ -34,16 +36,21 @@ trait UserApi[F[_]] {
 
 object UserApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
+
   @endpointInput("/user")
   case class CreateUserInput (
-     @jsonbody user: User
+        @jsonbody user: User
+  
   )
 
   object CreateUserInput{
     val endpointInput: EndpointInput[CreateUserInput] = EndpointInput.derived
   }
 
-  case class CreateUserOutput()
+  case class CreateUserOutput(
+    @jsonbody body : Unit
+  )
+
   object CreateUserOutput{
     val endpointOutput: EndpointOutput[CreateUserOutput] = EndpointOutput.derived
   }
@@ -65,16 +72,21 @@ object UserApi {
       .in(CreateUserInput.endpointInput)
       .out(CreateUserOutput.endpointOutput)
 
+
   @endpointInput("/user/createWithArray")
   case class CreateUsersWithArrayInputInput (
-     @jsonbody user: Seq[User]
+        @jsonbody user: Seq[User]
+  
   )
 
   object CreateUsersWithArrayInputInput{
     val endpointInput: EndpointInput[CreateUsersWithArrayInputInput] = EndpointInput.derived
   }
 
-  case class CreateUsersWithArrayInputOutput()
+  case class CreateUsersWithArrayInputOutput(
+    @jsonbody body : Unit
+  )
+
   object CreateUsersWithArrayInputOutput{
     val endpointOutput: EndpointOutput[CreateUsersWithArrayInputOutput] = EndpointOutput.derived
   }
@@ -94,16 +106,21 @@ object UserApi {
       .in(CreateUsersWithArrayInputInput.endpointInput)
       .out(CreateUsersWithArrayInputOutput.endpointOutput)
 
+
   @endpointInput("/user/createWithList")
   case class CreateUsersWithListInputInput (
-     @jsonbody user: Seq[User]
+        @jsonbody user: Seq[User]
+  
   )
 
   object CreateUsersWithListInputInput{
     val endpointInput: EndpointInput[CreateUsersWithListInputInput] = EndpointInput.derived
   }
 
-  case class CreateUsersWithListInputOutput()
+  case class CreateUsersWithListInputOutput(
+    @jsonbody body : Unit
+  )
+
   object CreateUsersWithListInputOutput{
     val endpointOutput: EndpointOutput[CreateUsersWithListInputOutput] = EndpointOutput.derived
   }
@@ -123,16 +140,21 @@ object UserApi {
       .in(CreateUsersWithListInputInput.endpointInput)
       .out(CreateUsersWithListInputOutput.endpointOutput)
 
+
   @endpointInput("/user/{username}")
   case class DeleteUserInput (
-     @path username: String
+        @path username: String
+  
   )
 
   object DeleteUserInput{
     val endpointInput: EndpointInput[DeleteUserInput] = EndpointInput.derived
   }
 
-  case class DeleteUserOutput()
+  case class DeleteUserOutput(
+    @jsonbody body : Unit
+  )
+
   object DeleteUserOutput{
     val endpointOutput: EndpointOutput[DeleteUserOutput] = EndpointOutput.derived
   }
@@ -155,9 +177,11 @@ object UserApi {
       .in(DeleteUserInput.endpointInput)
       .out(DeleteUserOutput.endpointOutput)
 
+
   @endpointInput("/user/{username}")
   case class GetUserByNameInput (
-     @path username: String
+        @path username: String
+  
   )
 
   object GetUserByNameInput{
@@ -165,7 +189,9 @@ object UserApi {
   }
 
   case class GetUserByNameOutput(
-    @jsonbody body : Option[User]=None,)
+    @jsonbody body : User
+  )
+
   object GetUserByNameOutput{
     val endpointOutput: EndpointOutput[GetUserByNameOutput] = EndpointOutput.derived
   }
@@ -184,10 +210,12 @@ object UserApi {
       .in(GetUserByNameInput.endpointInput)
       .out(GetUserByNameOutput.endpointOutput)
 
+
   @endpointInput("/user/login")
   case class LoginUserInput (
-     @query username: String,
-     @query password: String
+        @query username: String,
+          @query password: String
+  
   )
 
   object LoginUserInput{
@@ -195,10 +223,12 @@ object UserApi {
   }
 
   case class LoginUserOutput(
-    @header : Option[String]=None,
-    @header : Option[Int]=None,
-    @header : Option[OffsetDateTime]=None
-    @jsonbody body : Option[String]=None,)
+    @header setCookie: Option[String]=None,
+    @header xRateLimit: Option[Int]=None,
+    @header xExpiresAfter: Option[OffsetDateTime]=None,
+    @jsonbody body : String
+  )
+
   object LoginUserOutput{
     val endpointOutput: EndpointOutput[LoginUserOutput] = EndpointOutput.derived
   }
@@ -221,15 +251,20 @@ object UserApi {
       .in(LoginUserInput.endpointInput)
       .out(LoginUserOutput.endpointOutput)
 
+
   @endpointInput("/user/logout")
   case class LogoutUserInput (
+
   )
 
   object LogoutUserInput{
     val endpointInput: EndpointInput[LogoutUserInput] = EndpointInput.derived
   }
 
-  case class LogoutUserOutput()
+  case class LogoutUserOutput(
+    @jsonbody body : Unit
+  )
+
   object LogoutUserOutput{
     val endpointOutput: EndpointOutput[LogoutUserOutput] = EndpointOutput.derived
   }
@@ -247,17 +282,22 @@ object UserApi {
       .in(LogoutUserInput.endpointInput)
       .out(LogoutUserOutput.endpointOutput)
 
+
   @endpointInput("/user/{username}")
   case class UpdateUserInput (
-     @path username: String,
-     @jsonbody user: User
+        @path username: String,
+          @jsonbody user: User
+  
   )
 
   object UpdateUserInput{
     val endpointInput: EndpointInput[UpdateUserInput] = EndpointInput.derived
   }
 
-  case class UpdateUserOutput()
+  case class UpdateUserOutput(
+    @jsonbody body : Unit
+  )
+
   object UpdateUserOutput{
     val endpointOutput: EndpointOutput[UpdateUserOutput] = EndpointOutput.derived
   }

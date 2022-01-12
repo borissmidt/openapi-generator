@@ -21,6 +21,8 @@ import sttp.model._
 import scala.deprecated
 import sttp.client3.SttpBackend
 import sttp.tapir.client.sttp.SttpClientInterpreter
+import java.time._
+import sttp.tapir.generic.auto._
 
 trait PetApi[F[_]] {
   import PetApi._
@@ -36,9 +38,11 @@ trait PetApi[F[_]] {
 
 object PetApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
+
   @endpointInput("/pet")
   case class AddPetInput (
-     @jsonbody pet: Pet
+        @jsonbody pet: Pet
+  
   )
 
   object AddPetInput{
@@ -46,7 +50,9 @@ object PetApi {
   }
 
   case class AddPetOutput(
-    @jsonbody body : Option[Pet]=None,)
+    @jsonbody body : Pet
+  )
+
   object AddPetOutput{
     val endpointOutput: EndpointOutput[AddPetOutput] = EndpointOutput.derived
   }
@@ -64,17 +70,22 @@ object PetApi {
       .in(AddPetInput.endpointInput)
       .out(AddPetOutput.endpointOutput)
 
+
   @endpointInput("/pet/{petId}")
   case class DeletePetInput (
-     @path petId: Long
-     @header apiKey: Option[String]=None
+        @path petId: Long
+  ,
+       @header apiKey: Option[String]=None
   )
 
   object DeletePetInput{
     val endpointInput: EndpointInput[DeletePetInput] = EndpointInput.derived
   }
 
-  case class DeletePetOutput()
+  case class DeletePetOutput(
+    @jsonbody body : Unit
+  )
+
   object DeletePetOutput{
     val endpointOutput: EndpointOutput[DeletePetOutput] = EndpointOutput.derived
   }
@@ -92,9 +103,11 @@ object PetApi {
       .in(DeletePetInput.endpointInput)
       .out(DeletePetOutput.endpointOutput)
 
+
   @endpointInput("/pet/findByStatus")
   case class FindPetsByStatusInput (
-     @query status: Seq[String]
+        @query status: Seq[String]
+  
   )
 
   object FindPetsByStatusInput{
@@ -102,7 +115,9 @@ object PetApi {
   }
 
   case class FindPetsByStatusOutput(
-    @jsonbody body : Option[Seq[Pet]]=None,)
+    @jsonbody body : Seq[Pet]
+  )
+
   object FindPetsByStatusOutput{
     val endpointOutput: EndpointOutput[FindPetsByStatusOutput] = EndpointOutput.derived
   }
@@ -122,9 +137,11 @@ object PetApi {
       .in(FindPetsByStatusInput.endpointInput)
       .out(FindPetsByStatusOutput.endpointOutput)
 
+
   @endpointInput("/pet/findByTags")
   case class FindPetsByTagsInput (
-     @query tags: Seq[String]
+        @query tags: Seq[String]
+  
   )
 
   object FindPetsByTagsInput{
@@ -132,7 +149,9 @@ object PetApi {
   }
 
   case class FindPetsByTagsOutput(
-    @jsonbody body : Option[Seq[Pet]]=None,)
+    @jsonbody body : Seq[Pet]
+  )
+
   object FindPetsByTagsOutput{
     val endpointOutput: EndpointOutput[FindPetsByTagsOutput] = EndpointOutput.derived
   }
@@ -152,9 +171,11 @@ object PetApi {
       .in(FindPetsByTagsInput.endpointInput)
       .out(FindPetsByTagsOutput.endpointOutput)
 
+
   @endpointInput("/pet/{petId}")
   case class GetPetByIdInput (
-     @path petId: Long
+        @path petId: Long
+  
   )
 
   object GetPetByIdInput{
@@ -162,7 +183,9 @@ object PetApi {
   }
 
   case class GetPetByIdOutput(
-    @jsonbody body : Option[Pet]=None,)
+    @jsonbody body : Pet
+  )
+
   object GetPetByIdOutput{
     val endpointOutput: EndpointOutput[GetPetByIdOutput] = EndpointOutput.derived
   }
@@ -186,9 +209,11 @@ object PetApi {
       .in(GetPetByIdInput.endpointInput)
       .out(GetPetByIdOutput.endpointOutput)
 
+
   @endpointInput("/pet")
   case class UpdatePetInput (
-     @jsonbody pet: Pet
+        @jsonbody pet: Pet
+  
   )
 
   object UpdatePetInput{
@@ -196,7 +221,9 @@ object PetApi {
   }
 
   case class UpdatePetOutput(
-    @jsonbody body : Option[Pet]=None,)
+    @jsonbody body : Pet
+  )
+
   object UpdatePetOutput{
     val endpointOutput: EndpointOutput[UpdatePetOutput] = EndpointOutput.derived
   }
@@ -216,18 +243,28 @@ object PetApi {
       .in(UpdatePetInput.endpointInput)
       .out(UpdatePetOutput.endpointOutput)
 
-  @endpointInput("/pet/{petId}")
-  case class UpdatePetWithFormInput (
-     @path petId: Long
+  case class UpdatePetWithFormForm (
       name: Option[String]=None,
       status: Option[String]=None
+  )
+
+  @endpointInput("/pet/{petId}")
+  case class UpdatePetWithFormInput (
+        @path petId: Long
+  ,
+      
+      
+      @body(MultipartCodec.multipartCaseClassCodec[UpdatePetWithFormForm].rawBodyType, CodecFormat.MultipartFormData) body : UpdatePetWithFormForm
   )
 
   object UpdatePetWithFormInput{
     val endpointInput: EndpointInput[UpdatePetWithFormInput] = EndpointInput.derived
   }
 
-  case class UpdatePetWithFormOutput()
+  case class UpdatePetWithFormOutput(
+    @jsonbody body : Unit
+  )
+
   object UpdatePetWithFormOutput{
     val endpointOutput: EndpointOutput[UpdatePetWithFormOutput] = EndpointOutput.derived
   }
@@ -246,11 +283,18 @@ object PetApi {
       .in(UpdatePetWithFormInput.endpointInput)
       .out(UpdatePetWithFormOutput.endpointOutput)
 
+  case class UploadFileForm (
+      additionalMetadata: Option[String]=None,
+      file: Option[Part[File]]=None
+  )
+
   @endpointInput("/pet/{petId}/uploadImage")
   case class UploadFileInput (
-     @path petId: Long
-      additionalMetadata: Option[String]=None,
-      file: Option[File]=None
+        @path petId: Long
+  ,
+      
+      
+      @body(MultipartCodec.multipartCaseClassCodec[UploadFileForm].rawBodyType, CodecFormat.MultipartFormData) body : UploadFileForm
   )
 
   object UploadFileInput{
@@ -258,7 +302,9 @@ object PetApi {
   }
 
   case class UploadFileOutput(
-    @jsonbody body : Option[ApiResponse]=None)
+    @jsonbody body : ApiResponse
+  )
+
   object UploadFileOutput{
     val endpointOutput: EndpointOutput[UploadFileOutput] = EndpointOutput.derived
   }

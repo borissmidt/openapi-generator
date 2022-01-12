@@ -11,14 +11,17 @@ libraryDependencies ++= Seq(
 {{/joda}}
 {{#json4s}}
   "org.json4s" %% "json4s-jackson" % "{{json4sVersion}}",
+  "com.softwaremill.sttp.tapir" %% "tapir-json-json4s" % "{{tapirVersion}}",
 {{/json4s}}
 {{#circe}}
   "io.circe" %% "circe-core" % "{{circeVersion}}",
   "io.circe" %% "circe-generic" % "{{circeVersion}}",
   "io.circe" %% "circe-parser" % "{{circeVersion}}",
+  "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % "{{tapirVersion}}",
 {{/circe}}
 {{#upickle}}
     "com.lihaoyi" %% "upickle" % "{{upickleVersion}}",
+    "com.softwaremill.sttp.tapir" %% "tapir-json-upickle" % "{{tapirVersion}}",
 {{/upickle}}
 {{#jsoniter}}
   "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"   % "{{jsoniterVersion}}",

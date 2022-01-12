@@ -22,6 +22,9 @@ case class ApiResponse(
   message: Option[String] = None
 )
 object ApiResponse{
+        import io.circe._, io.circe.generic.semiauto._
+        val encoder: Decoder[ApiResponse] = deriveDecoder[ApiResponse]
+        val decoder: Encoder[ApiResponse] = deriveEncoder[ApiResponse]
 
 
 }

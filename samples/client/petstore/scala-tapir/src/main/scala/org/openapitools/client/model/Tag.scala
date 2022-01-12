@@ -21,6 +21,9 @@ case class Tag(
   name: Option[String] = None
 )
 object Tag{
+        import io.circe._, io.circe.generic.semiauto._
+        val encoder: Decoder[Tag] = deriveDecoder[Tag]
+        val decoder: Encoder[Tag] = deriveEncoder[Tag]
 
 
 }

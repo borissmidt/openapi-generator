@@ -21,6 +21,9 @@ case class Category(
   name: Option[String] = None
 )
 object Category{
+        import io.circe._, io.circe.generic.semiauto._
+        val encoder: Decoder[Category] = deriveDecoder[Category]
+        val decoder: Encoder[Category] = deriveEncoder[Category]
 
 
 }

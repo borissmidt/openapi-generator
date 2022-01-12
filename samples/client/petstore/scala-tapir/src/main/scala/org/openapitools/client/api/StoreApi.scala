@@ -11,18 +11,16 @@
  */
 package org.openapitools.client.api
 
-import org.http4s.HttpRoutes
 import org.openapitools.client.model.Order
 import org.openapitools.client.core.JsonSupport._
 import sttp.tapir._
 import sttp.tapir.EndpointIO.annotations._
 import sttp.model._
-
 import scala.deprecated
 import sttp.client3.SttpBackend
 import sttp.tapir.client.sttp.SttpClientInterpreter
-import sttp.tapir.server.ServerEndpoint
-import sttp.tapir.server.http4s.Http4sServerInterpreter
+import java.time._
+import sttp.tapir.generic.auto._
 
 trait StoreApi[F[_]] {
   import StoreApi._
@@ -34,16 +32,21 @@ trait StoreApi[F[_]] {
 
 object StoreApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
+
   @endpointInput("/store/order/{orderId}")
   case class DeleteOrderInput (
-     @path orderId: String
+        @path orderId: String
+  
   )
 
   object DeleteOrderInput{
     val endpointInput: EndpointInput[DeleteOrderInput] = EndpointInput.derived
   }
 
-  case class DeleteOrderOutput()
+  case class DeleteOrderOutput(
+    @jsonbody body : Unit
+  )
+
   object DeleteOrderOutput{
     val endpointOutput: EndpointOutput[DeleteOrderOutput] = EndpointOutput.derived
   }
@@ -63,8 +66,10 @@ object StoreApi {
       .in(DeleteOrderInput.endpointInput)
       .out(DeleteOrderOutput.endpointOutput)
 
+
   @endpointInput("/store/inventory")
   case class GetInventoryInput (
+
   )
 
   object GetInventoryInput{
@@ -72,7 +77,9 @@ object StoreApi {
   }
 
   case class GetInventoryOutput(
-    @jsonbody body : Option[Map[String, Int]]=None)
+    @jsonbody body : Map[String, Int]
+  )
+
   object GetInventoryOutput{
     val endpointOutput: EndpointOutput[GetInventoryOutput] = EndpointOutput.derived
   }
@@ -92,9 +99,11 @@ object StoreApi {
       .in(GetInventoryInput.endpointInput)
       .out(GetInventoryOutput.endpointOutput)
 
+
   @endpointInput("/store/order/{orderId}")
   case class GetOrderByIdInput (
-     @path orderId: Long
+        @path orderId: Long
+  
   )
 
   object GetOrderByIdInput{
@@ -102,7 +111,9 @@ object StoreApi {
   }
 
   case class GetOrderByIdOutput(
-    @jsonbody body : Option[Order]=None,)
+    @jsonbody body : Order
+  )
+
   object GetOrderByIdOutput{
     val endpointOutput: EndpointOutput[GetOrderByIdOutput] = EndpointOutput.derived
   }
@@ -123,9 +134,11 @@ object StoreApi {
       .in(GetOrderByIdInput.endpointInput)
       .out(GetOrderByIdOutput.endpointOutput)
 
+
   @endpointInput("/store/order")
   case class PlaceOrderInput (
-     @jsonbody order: Order
+        @jsonbody order: Order
+  
   )
 
   object PlaceOrderInput{
@@ -133,7 +146,9 @@ object StoreApi {
   }
 
   case class PlaceOrderOutput(
-    @jsonbody body : Option[Order]=None,)
+    @jsonbody body : Order
+  )
+
   object PlaceOrderOutput{
     val endpointOutput: EndpointOutput[PlaceOrderOutput] = EndpointOutput.derived
   }
@@ -152,13 +167,11 @@ object StoreApi {
       .out(PlaceOrderOutput.endpointOutput)
 
 
-  def bind[F[_]](t: StoreApi[F], http: Http4sServerInterpreter[F]) =
-      List(
-        deleteOrder.serverLogic(t.deleteOrder),
-        getInventory.serverLogic(t.getInventory),
-        getOrderById.serverLogic(t.getOrderById),
-        placeOrder.serverLogic(t.placeOrder)
-      )
+  def bind[F[_]](t: StoreApi[F]) = Seq(
+    deleteOrder.serverLogic(t.deleteOrder),
+    getInventory.serverLogic(t.getInventory),
+    getOrderById.serverLogic(t.getOrderById),
+    placeOrder.serverLogic(t.placeOrder)
   )
 
   def stub[F[_], P](url: Option[Uri], interpeter: SttpClientInterpreter, backend: SttpBackend[F, P]): StoreApi[F] = new StoreApi[F]{

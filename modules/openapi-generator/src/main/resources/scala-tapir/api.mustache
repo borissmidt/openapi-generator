@@ -11,6 +11,8 @@ import sttp.model._
 import scala.deprecated
 import sttp.client3.SttpBackend
 import sttp.tapir.client.sttp.SttpClientInterpreter
+import java.time._
+import sttp.tapir.generic.auto._
 
 {{#operations}}
 trait {{classname}}[F[_]] {
@@ -23,25 +25,36 @@ trait {{classname}}[F[_]] {
 object {{classname}} {
   val baseUrl: String = "{{{basePath}}}"
 {{#operation}}
+  {{#formParams.0}}
+  case class {{operationIdCamelCase}}Form (
+  {{#formParams}}
+      {{>formPartField}}{{^-last}},{{/-last}}
+  {{/formParams}}
+  )
+  {{/formParams.0}}
+
   @endpointInput("{{{path}}}")
   case class {{operationIdCamelCase}}Input (
   {{#authMethods}}
     {{#isBasicBasic}}
-        @basic paramName: UsernamePassword
+        @basic paramName: UsernamePassword.
     {{/isBasicBasic}}
     {{#isBasicBearer}}
-        @bearer {{>fieldEncoder}}
+        @bearer {{>fieldEncoder}}{{^-last}},{{/-last}}
     {{/isBasicBearer}}
     {{#isKeyInCookie}}
-        no cookie authentication implemented
+        no cookie authentication implemented.
     {{/isKeyInCookie}}
   {{/authMethods}}
   {{#requiredParams}}
-    {{>paramType}} {{>fieldEncoder}}
-  {{/requiredParams}}
+      {{^isFormParam}} {{>paramType}} {{>fieldEncoder}}{{^-last}},{{/-last}}{{/isFormParam}}
+  {{/requiredParams}}{{#requiredParams.0}}{{#optionalParams.0}},{{/optionalParams.0}}{{/requiredParams.0}}
   {{#optionalParams}}
-    {{>paramType}} {{>fieldEncoder}}
+      {{^isFormParam}}{{>paramType}} {{>fieldEncoder}}{{^-last}},{{/-last}}{{/isFormParam}}
   {{/optionalParams}}
+  {{#formParams.0}}
+      @body(MultipartCodec.multipartCaseClassCodec[{{operationIdCamelCase}}Form].rawBodyType, CodecFormat.MultipartFormData) body : {{operationIdCamelCase}}Form
+  {{/formParams.0}}
   )
 
   object {{operationIdCamelCase}}Input{
@@ -49,8 +62,10 @@ object {{classname}} {
   }
 
   case class {{operationIdCamelCase}}Output({{#responses}}{{#is2xx}}{{#headers}}
-    @header {{>fieldEncoder}}{{/headers}}
-    @jsonbody body {{>fieldEncoder}}{{/is2xx}}{{/responses}})
+    @header {{>fieldEncoder}},{{/headers}}{{/is2xx}}{{/responses}}
+    @jsonbody body : {{{returnType}}}{{^returnType}}Unit{{/returnType}}
+  )
+
   object {{operationIdCamelCase}}Output{
     val endpointOutput: EndpointOutput[{{operationIdCamelCase}}Output] = EndpointOutput.derived
   }

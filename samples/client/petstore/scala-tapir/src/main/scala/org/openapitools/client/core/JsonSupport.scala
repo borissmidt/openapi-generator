@@ -12,37 +12,12 @@
 package org.openapitools.client.core
 
 import org.openapitools.client.model._
-import org.json4s._
-import sttp.client3.json4s.SttpJson4sApi
-import scala.reflect.ClassTag
+object JsonSupport extends SttpCirceApi with AutoDerivation with DateSerializers {
 
-object JsonSupport extends SttpJson4sApi {
-  def enumSerializers: Seq[Serializer[_]] = Seq[Serializer[_]]() :+
-    new EnumNameSerializer(OrderEnums.Status) :+
-    new EnumNameSerializer(PetEnums.Status)
+  implicit val OrderStatusDecoder: Decoder[OrderEnums.Status] = Decoder.decodeEnumeration(OrderEnums.Status)
+  implicit val OrderStatusEncoder: Encoder[OrderEnums.Status] = Encoder.encodeEnumeration(OrderEnums.Status)
 
-  private class EnumNameSerializer[E <: Enumeration: ClassTag](enum: E) extends Serializer[E#Value] {
-    import JsonDSL._
-    val EnumerationClass: Class[E#Value] = classOf[E#Value]
+  implicit val PetStatusDecoder: Decoder[PetEnums.Status] = Decoder.decodeEnumeration(PetEnums.Status)
+  implicit val PetStatusEncoder: Encoder[PetEnums.Status] = Encoder.encodeEnumeration(PetEnums.Status)
 
-    def deserialize(implicit format: Formats): PartialFunction[(TypeInfo, JValue), E#Value] = {
-      case (t @ TypeInfo(EnumerationClass, _), json) if isValid(json) =>
-        json match {
-          case JString(value) => enum.withName(value)
-          case value => throw new MappingException(s"Can't convert $value to $EnumerationClass")
-        }
-    }
-
-    private[this] def isValid(json: JValue) = json match {
-      case JString(value) if enum.values.exists(_.toString == value) => true
-      case _ => false
-    }
-
-    def serialize(implicit format: Formats): PartialFunction[Any, JValue] = {
-      case i: E#Value => i.toString
-      }
-    }
-
-  implicit val format: Formats = DefaultFormats ++ enumSerializers ++ DateSerializers.all
-  implicit val serialization: org.json4s.Serialization = org.json4s.jackson.Serialization
 }

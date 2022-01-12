@@ -28,6 +28,9 @@ case class User(
   userStatus: Option[Int] = None
 )
 object User{
+        import io.circe._, io.circe.generic.semiauto._
+        val encoder: Decoder[User] = deriveDecoder[User]
+        val decoder: Encoder[User] = deriveEncoder[User]
 
 
 }

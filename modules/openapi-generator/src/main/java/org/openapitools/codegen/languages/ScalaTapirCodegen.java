@@ -169,9 +169,11 @@ public class ScalaTapirCodegen extends AbstractScalaCodegen implements CodegenCo
 
         supportingFiles.add(new SupportingFile("README.mustache", "", "README.md"));
         supportingFiles.add(new SupportingFile("build.sbt.mustache", "", "build.sbt"));
+        supportingFiles.add(new SupportingFile(".scalafmt.conf.mustache", "", ".scalafmt.conf"));
         final String invokerFolder = (sourceFolder + File.separator + invokerPackage).replace(".", File.separator);
         supportingFiles.add(new SupportingFile("jsonSupport.mustache", invokerFolder, "JsonSupport.scala"));
         supportingFiles.add(new SupportingFile("project/build.properties.mustache", "project", "build.properties"));
+        supportingFiles.add(new SupportingFile("project/plugins.sbt.mustache", "project", "plugins.sbt"));
         supportingFiles.add(new SupportingFile("dateSerializers.mustache", invokerFolder, "DateSerializers.scala"));
     }
 
@@ -537,7 +539,7 @@ public class ScalaTapirCodegen extends AbstractScalaCodegen implements CodegenCo
         private static final String CIRCE = "circe";
 
         public JsonLibraryProperty() {
-            super("jsonLibrary", "Json library to use. Possible values are: json4s and circe.", JSON4S);
+            super("jsonLibrary", "Json library to use. Possible values are: json4s and circe.", CIRCE);
         }
 
         @Override

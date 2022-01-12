@@ -6,10 +6,10 @@ import {{modelPackage}}._
 {{/models.0}}
 {{#json4s}}
 import org.json4s._
-import sttp.client3.json4s.SttpJson4sApi
+import sttp.tapir.json.json4s.TapirJson4s
 import scala.reflect.ClassTag
 
-object JsonSupport extends SttpJson4sApi {
+object JsonSupport extends TapirJson4s {
   def enumSerializers: Seq[Serializer[_]] = Seq[Serializer[_]](){{#models}}{{#model}}{{#hasEnums}}{{#vars}}{{#isEnum}} :+
     new EnumNameSerializer({{classname}}Enums.{{datatypeWithEnum}}){{/isEnum}}{{/vars}}{{/hasEnums}}{{/model}}{{/models}}
 
@@ -39,11 +39,12 @@ object JsonSupport extends SttpJson4sApi {
   implicit val serialization: org.json4s.Serialization = org.json4s.jackson.Serialization
 }
 {{/json4s}}
+
 {{#circe}}
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.AutoDerivation
 import sttp.client3.circe.SttpCirceApi
-
+import sttp.tapir.json.circe._
 object JsonSupport extends SttpCirceApi with AutoDerivation with DateSerializers {
 {{#models}}{{#model}}{{#hasEnums}}{{#vars}}{{#isEnum}}
   implicit val {{classname}}{{datatypeWithEnum}}Decoder: Decoder[{{classname}}Enums.{{datatypeWithEnum}}] = Decoder.decodeEnumeration({{classname}}Enums.{{datatypeWithEnum}})
