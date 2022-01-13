@@ -6,7 +6,7 @@ import {{import}}
 {{/imports}}
 import {{invokerPackage}}.JsonSupport._
 import sttp.tapir._
-import sttp.tapir.EndpointIO.annotations._
+import sttp.tapir.EndpointIO.annotations
 import sttp.model._
 import scala.deprecated
 import sttp.client3.SttpBackend
@@ -33,14 +33,14 @@ object {{classname}} {
   )
   {{/formParams.0}}
 
-  @endpointInput("{{{path}}}")
+  @annotations.endpointInput("{{{path}}}")
   case class {{operationIdCamelCase}}Input (
   {{#authMethods}}
     {{#isBasicBasic}}
-        @basic paramName: UsernamePassword.
+        @annotations.basic paramName: UsernamePassword.
     {{/isBasicBasic}}
     {{#isBasicBearer}}
-        @bearer {{>fieldEncoder}}{{^-last}},{{/-last}}
+        @annotations.bearer {{>fieldEncoder}}{{^-last}},{{/-last}}
     {{/isBasicBearer}}
     {{#isKeyInCookie}}
         no cookie authentication implemented.
@@ -53,7 +53,7 @@ object {{classname}} {
       {{^isFormParam}}{{>paramType}} {{>fieldEncoder}}{{^-last}},{{/-last}}{{/isFormParam}}
   {{/optionalParams}}
   {{#formParams.0}}
-      @body(MultipartCodec.multipartCaseClassCodec[{{operationIdCamelCase}}Form].rawBodyType, CodecFormat.MultipartFormData) body : {{operationIdCamelCase}}Form
+      @annotations.body(MultipartCodec.multipartCaseClassCodec[{{operationIdCamelCase}}Form].rawBodyType.partTypes,  sttp.tapir.CodecFormat.MultipartFormData()) body : {{operationIdCamelCase}}Form
   {{/formParams.0}}
   )
 
@@ -62,8 +62,8 @@ object {{classname}} {
   }
 
   case class {{operationIdCamelCase}}Output({{#responses}}{{#is2xx}}{{#headers}}
-    @header {{>fieldEncoder}},{{/headers}}{{/is2xx}}{{/responses}}
-    @jsonbody body : {{{returnType}}}{{^returnType}}Unit{{/returnType}}
+    @annotations.header {{>fieldEncoder}},{{/headers}}{{/is2xx}}{{/responses}}
+    @annotations.jsonbody body : {{{returnType}}}{{^returnType}}Unit{{/returnType}}
   )
 
   object {{operationIdCamelCase}}Output{

@@ -25,22 +25,23 @@ case class {{classname}}(
   {{/vars}}
 )
 object {{classname}}{
-    {{#circe}}
-        import io.circe._, io.circe.generic.semiauto._
-        val encoder: Decoder[{{classname}}] = deriveDecoder[{{classname}}]
-        val decoder: Encoder[{{classname}}] = deriveEncoder[{{classname}}]
-    {{/circe}}
-
-    {{#upickle}}
-        import upickle.default.{ReadWriter => RW, macroRW}
-        val codec: RW[{{classname}}] = macroRW[{{classname}}]
-    {{/upickle}}
-
-    {{#jsoniter}}
-        import com.github.plokhotnyuk.jsoniter_scala.macros._
-        import com.github.plokhotnyuk.jsoniter_scala.core._
-        implicit val codec: JsonValueCodec[{{classname}}] = JsonCodecMaker.make
-    {{/jsoniter}}
+{{#circe}}
+    import io.circe._
+    import io.circe.generic.semiauto._
+    import {{invokerPackage}}.JsonSupport._
+    implicit val codec: Codec[{{classname}}] = deriveCodec[{{classname}}]
+{{/circe}}
+{{#upickle}}
+    import {{invokerPackage}}.JsonSupport._
+    import upickle.default.{ReadWriter => RW, macroRW}
+    implicit val codec: RW[{{classname}}] = macroRW[{{classname}}]
+{{/upickle}}
+{{#jsoniter}}
+    import {{invokerPackage}}.JsonSupport._
+    import com.github.plokhotnyuk.jsoniter_scala.macros._
+    import com.github.plokhotnyuk.jsoniter_scala.core._
+    implicit val codec: JsonValueCodec[{{classname}}] = JsonCodecMaker.make
+{{/jsoniter}}
 }
 
 {{/isEnum}}

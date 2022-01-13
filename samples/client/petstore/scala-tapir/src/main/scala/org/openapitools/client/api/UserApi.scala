@@ -14,7 +14,7 @@ package org.openapitools.client.api
 import org.openapitools.client.model.User
 import org.openapitools.client.core.JsonSupport._
 import sttp.tapir._
-import sttp.tapir.EndpointIO.annotations._
+import sttp.tapir.EndpointIO.annotations
 import sttp.model._
 import scala.deprecated
 import sttp.client3.SttpBackend
@@ -37,9 +37,9 @@ trait UserApi[F[_]] {
 object UserApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
 
-  @endpointInput("/user")
+  @annotations.endpointInput("/user")
   case class CreateUserInput (
-        @jsonbody user: User
+        @annotations.jsonbody user: User
   
   )
 
@@ -48,7 +48,7 @@ object UserApi {
   }
 
   case class CreateUserOutput(
-    @jsonbody body : Unit
+    @annotations.jsonbody body : Unit
   )
 
   object CreateUserOutput{
@@ -73,9 +73,9 @@ object UserApi {
       .out(CreateUserOutput.endpointOutput)
 
 
-  @endpointInput("/user/createWithArray")
+  @annotations.endpointInput("/user/createWithArray")
   case class CreateUsersWithArrayInputInput (
-        @jsonbody user: Seq[User]
+        @annotations.jsonbody user: Seq[User]
   
   )
 
@@ -84,7 +84,7 @@ object UserApi {
   }
 
   case class CreateUsersWithArrayInputOutput(
-    @jsonbody body : Unit
+    @annotations.jsonbody body : Unit
   )
 
   object CreateUsersWithArrayInputOutput{
@@ -107,9 +107,9 @@ object UserApi {
       .out(CreateUsersWithArrayInputOutput.endpointOutput)
 
 
-  @endpointInput("/user/createWithList")
+  @annotations.endpointInput("/user/createWithList")
   case class CreateUsersWithListInputInput (
-        @jsonbody user: Seq[User]
+        @annotations.jsonbody user: Seq[User]
   
   )
 
@@ -118,7 +118,7 @@ object UserApi {
   }
 
   case class CreateUsersWithListInputOutput(
-    @jsonbody body : Unit
+    @annotations.jsonbody body : Unit
   )
 
   object CreateUsersWithListInputOutput{
@@ -141,9 +141,9 @@ object UserApi {
       .out(CreateUsersWithListInputOutput.endpointOutput)
 
 
-  @endpointInput("/user/{username}")
+  @annotations.endpointInput("/user/{username}")
   case class DeleteUserInput (
-        @path username: String
+        @annotations.path username: String
   
   )
 
@@ -152,7 +152,7 @@ object UserApi {
   }
 
   case class DeleteUserOutput(
-    @jsonbody body : Unit
+    @annotations.jsonbody body : Unit
   )
 
   object DeleteUserOutput{
@@ -178,9 +178,9 @@ object UserApi {
       .out(DeleteUserOutput.endpointOutput)
 
 
-  @endpointInput("/user/{username}")
+  @annotations.endpointInput("/user/{username}")
   case class GetUserByNameInput (
-        @path username: String
+        @annotations.path username: String
   
   )
 
@@ -189,7 +189,7 @@ object UserApi {
   }
 
   case class GetUserByNameOutput(
-    @jsonbody body : User
+    @annotations.jsonbody body : User
   )
 
   object GetUserByNameOutput{
@@ -211,10 +211,10 @@ object UserApi {
       .out(GetUserByNameOutput.endpointOutput)
 
 
-  @endpointInput("/user/login")
+  @annotations.endpointInput("/user/login")
   case class LoginUserInput (
-        @query username: String,
-          @query password: String
+        @annotations.query username: String,
+          @annotations.query password: String
   
   )
 
@@ -223,10 +223,10 @@ object UserApi {
   }
 
   case class LoginUserOutput(
-    @header setCookie: Option[String]=None,
-    @header xRateLimit: Option[Int]=None,
-    @header xExpiresAfter: Option[OffsetDateTime]=None,
-    @jsonbody body : String
+    @annotations.header setCookie: Option[String]=None,
+    @annotations.header xRateLimit: Option[Int]=None,
+    @annotations.header xExpiresAfter: Option[OffsetDateTime]=None,
+    @annotations.jsonbody body : String
   )
 
   object LoginUserOutput{
@@ -252,7 +252,7 @@ object UserApi {
       .out(LoginUserOutput.endpointOutput)
 
 
-  @endpointInput("/user/logout")
+  @annotations.endpointInput("/user/logout")
   case class LogoutUserInput (
 
   )
@@ -262,7 +262,7 @@ object UserApi {
   }
 
   case class LogoutUserOutput(
-    @jsonbody body : Unit
+    @annotations.jsonbody body : Unit
   )
 
   object LogoutUserOutput{
@@ -283,10 +283,10 @@ object UserApi {
       .out(LogoutUserOutput.endpointOutput)
 
 
-  @endpointInput("/user/{username}")
+  @annotations.endpointInput("/user/{username}")
   case class UpdateUserInput (
-        @path username: String,
-          @jsonbody user: User
+        @annotations.path username: String,
+          @annotations.jsonbody user: User
   
   )
 
@@ -295,7 +295,7 @@ object UserApi {
   }
 
   case class UpdateUserOutput(
-    @jsonbody body : Unit
+    @annotations.jsonbody body : Unit
   )
 
   object UpdateUserOutput{

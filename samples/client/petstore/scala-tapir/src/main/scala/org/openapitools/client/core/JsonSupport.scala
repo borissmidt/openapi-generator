@@ -12,12 +12,18 @@
 package org.openapitools.client.core
 
 import org.openapitools.client.model._
-object JsonSupport extends SttpCirceApi with AutoDerivation with DateSerializers {
 
-  implicit val OrderStatusDecoder: Decoder[OrderEnums.Status] = Decoder.decodeEnumeration(OrderEnums.Status)
-  implicit val OrderStatusEncoder: Encoder[OrderEnums.Status] = Encoder.encodeEnumeration(OrderEnums.Status)
+import io.circe.Codec
+import io.circe.generic.AutoDerivation
+import sttp.tapir.json.circe.TapirJsonCirce
+import sttp.tapir.Schema
+import sttp.tapir.SchemaType.SString
 
-  implicit val PetStatusDecoder: Decoder[PetEnums.Status] = Decoder.decodeEnumeration(PetEnums.Status)
-  implicit val PetStatusEncoder: Encoder[PetEnums.Status] = Encoder.encodeEnumeration(PetEnums.Status)
+object JsonSupport extends AutoDerivation with DateSerializers with TapirJsonCirce {
+  implicit def schemEnumeration[T <: Enumeration#Value]: Schema[T] = Schema(SString())
+
+  implicit val OrderStatusDecoder: Codec[OrderEnums.Status] = Codec.codecForEnumeration(OrderEnums.Status)
+
+  implicit val PetStatusDecoder: Codec[PetEnums.Status] = Codec.codecForEnumeration(PetEnums.Status)
 
 }

@@ -12,15 +12,19 @@
 package org.openapitools.client.api
 
 import org.openapitools.client.model.ApiResponse
+
 import java.io.File
 import org.openapitools.client.model.Pet
 import org.openapitools.client.core.JsonSupport._
 import sttp.tapir._
-import sttp.tapir.EndpointIO.annotations._
+import sttp.tapir.EndpointIO.annotations
 import sttp.model._
+
 import scala.deprecated
 import sttp.client3.SttpBackend
+import sttp.tapir.CodecFormat.MultipartFormData
 import sttp.tapir.client.sttp.SttpClientInterpreter
+
 import java.time._
 import sttp.tapir.generic.auto._
 
@@ -39,9 +43,9 @@ trait PetApi[F[_]] {
 object PetApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
 
-  @endpointInput("/pet")
+  @annotations.endpointInput("/pet")
   case class AddPetInput (
-        @jsonbody pet: Pet
+        @annotations.jsonbody pet: Pet
   
   )
 
@@ -50,7 +54,7 @@ object PetApi {
   }
 
   case class AddPetOutput(
-    @jsonbody body : Pet
+    @annotations.jsonbody body : Pet
   )
 
   object AddPetOutput{
@@ -71,11 +75,11 @@ object PetApi {
       .out(AddPetOutput.endpointOutput)
 
 
-  @endpointInput("/pet/{petId}")
+  @annotations.endpointInput("/pet/{petId}")
   case class DeletePetInput (
-        @path petId: Long
+        @annotations.path petId: Long
   ,
-       @header apiKey: Option[String]=None
+       @annotations.header apiKey: Option[String]=None
   )
 
   object DeletePetInput{
@@ -83,7 +87,7 @@ object PetApi {
   }
 
   case class DeletePetOutput(
-    @jsonbody body : Unit
+    @annotations.jsonbody body : Unit
   )
 
   object DeletePetOutput{
@@ -104,9 +108,9 @@ object PetApi {
       .out(DeletePetOutput.endpointOutput)
 
 
-  @endpointInput("/pet/findByStatus")
+  @annotations.endpointInput("/pet/findByStatus")
   case class FindPetsByStatusInput (
-        @query status: Seq[String]
+        @annotations.query status: Seq[String]
   
   )
 
@@ -115,7 +119,7 @@ object PetApi {
   }
 
   case class FindPetsByStatusOutput(
-    @jsonbody body : Seq[Pet]
+    @annotations.jsonbody body : Seq[Pet]
   )
 
   object FindPetsByStatusOutput{
@@ -138,9 +142,9 @@ object PetApi {
       .out(FindPetsByStatusOutput.endpointOutput)
 
 
-  @endpointInput("/pet/findByTags")
+  @annotations.endpointInput("/pet/findByTags")
   case class FindPetsByTagsInput (
-        @query tags: Seq[String]
+        @annotations.query tags: Seq[String]
   
   )
 
@@ -149,7 +153,7 @@ object PetApi {
   }
 
   case class FindPetsByTagsOutput(
-    @jsonbody body : Seq[Pet]
+    @annotations.jsonbody body : Seq[Pet]
   )
 
   object FindPetsByTagsOutput{
@@ -172,9 +176,9 @@ object PetApi {
       .out(FindPetsByTagsOutput.endpointOutput)
 
 
-  @endpointInput("/pet/{petId}")
+  @annotations.endpointInput("/pet/{petId}")
   case class GetPetByIdInput (
-        @path petId: Long
+        @annotations.path petId: Long
   
   )
 
@@ -183,7 +187,7 @@ object PetApi {
   }
 
   case class GetPetByIdOutput(
-    @jsonbody body : Pet
+    @annotations.jsonbody body : Pet
   )
 
   object GetPetByIdOutput{
@@ -210,9 +214,9 @@ object PetApi {
       .out(GetPetByIdOutput.endpointOutput)
 
 
-  @endpointInput("/pet")
+  @annotations.endpointInput("/pet")
   case class UpdatePetInput (
-        @jsonbody pet: Pet
+        @annotations.jsonbody pet: Pet
   
   )
 
@@ -221,7 +225,7 @@ object PetApi {
   }
 
   case class UpdatePetOutput(
-    @jsonbody body : Pet
+    @annotations.jsonbody body : Pet
   )
 
   object UpdatePetOutput{
@@ -248,21 +252,28 @@ object PetApi {
       status: Option[String]=None
   )
 
-  @endpointInput("/pet/{petId}")
+  object UpdatePetWithFormForm{
+    import sttp.tapir.generic.auto._
+    implicit val codec = MultipartCodec.multipartCaseClassCodec[UpdatePetWithFormForm]
+  }
+
+  @annotations.endpointInput("/pet/{petId}")
   case class UpdatePetWithFormInput (
-        @path petId: Long
+        @annotations.path petId: Long
   ,
-      
-      
-      @body(MultipartCodec.multipartCaseClassCodec[UpdatePetWithFormForm].rawBodyType, CodecFormat.MultipartFormData) body : UpdatePetWithFormForm
+
+
+      @annotations.body(UpdatePetWithFormInput.codec.rawBodyType, MultipartFormData()) body : UpdatePetWithFormForm
   )
 
   object UpdatePetWithFormInput{
+
+
     val endpointInput: EndpointInput[UpdatePetWithFormInput] = EndpointInput.derived
   }
 
   case class UpdatePetWithFormOutput(
-    @jsonbody body : Unit
+    @annotations.jsonbody body : Unit
   )
 
   object UpdatePetWithFormOutput{
@@ -288,13 +299,14 @@ object PetApi {
       file: Option[Part[File]]=None
   )
 
-  @endpointInput("/pet/{petId}/uploadImage")
+  import sttp.tapir.generic.auto._
+  @annotations.endpointInput("/pet/{petId}/uploadImage")
   case class UploadFileInput (
-        @path petId: Long
+        @annotations.path petId: Long
   ,
-      
-      
-      @body(MultipartCodec.multipartCaseClassCodec[UploadFileForm].rawBodyType, CodecFormat.MultipartFormData) body : UploadFileForm
+
+
+      @annotations.body(MultipartCodec.multipartCaseClassCodec[UploadFileForm].rawBodyType.partTypes, sttp.tapir.CodecFormat.MultipartFormData()) body : UploadFileForm
   )
 
   object UploadFileInput{
@@ -302,7 +314,7 @@ object PetApi {
   }
 
   case class UploadFileOutput(
-    @jsonbody body : ApiResponse
+    @annotations.jsonbody body : ApiResponse
   )
 
   object UploadFileOutput{

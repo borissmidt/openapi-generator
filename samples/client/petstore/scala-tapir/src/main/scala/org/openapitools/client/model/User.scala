@@ -28,11 +28,10 @@ case class User(
   userStatus: Option[Int] = None
 )
 object User{
-        import io.circe._, io.circe.generic.semiauto._
-        val encoder: Decoder[User] = deriveDecoder[User]
-        val decoder: Encoder[User] = deriveEncoder[User]
-
-
+    import io.circe._
+    import io.circe.generic.semiauto._
+    import org.openapitools.client.core.JsonSupport._
+    implicit val codec: Codec[User] = deriveCodec[User]
 }
 
 

@@ -11,7 +11,7 @@ import org.joda.time.format.ISODateTimeFormat
 {{/joda}}
 
 {{#json4s}}
-object DateSerializers {
+trait DateSerializers {
     import org.json4s.{Serializer, CustomSerializer, JNull}
     import org.json4s.JsonAST.JString
     {{#java8}}

@@ -27,11 +27,10 @@ case class Order(
   complete: Option[Boolean] = None
 )
 object Order{
-        import io.circe._, io.circe.generic.semiauto._
-        val encoder: Decoder[Order] = deriveDecoder[Order]
-        val decoder: Encoder[Order] = deriveEncoder[Order]
-
-
+    import io.circe._
+    import io.circe.generic.semiauto._
+    import org.openapitools.client.core.JsonSupport._
+    implicit val codec: Codec[Order] = deriveCodec[Order]
 }
 
 

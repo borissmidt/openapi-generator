@@ -22,11 +22,10 @@ case class ApiResponse(
   message: Option[String] = None
 )
 object ApiResponse{
-        import io.circe._, io.circe.generic.semiauto._
-        val encoder: Decoder[ApiResponse] = deriveDecoder[ApiResponse]
-        val decoder: Encoder[ApiResponse] = deriveEncoder[ApiResponse]
-
-
+    import io.circe._
+    import io.circe.generic.semiauto._
+    import org.openapitools.client.core.JsonSupport._
+    implicit val codec: Codec[ApiResponse] = deriveCodec[ApiResponse]
 }
 
 

@@ -26,11 +26,10 @@ case class Pet(
   status: Option[PetEnums.Status] = None
 )
 object Pet{
-        import io.circe._, io.circe.generic.semiauto._
-        val encoder: Decoder[Pet] = deriveDecoder[Pet]
-        val decoder: Encoder[Pet] = deriveEncoder[Pet]
-
-
+    import io.circe._
+    import io.circe.generic.semiauto._
+    import org.openapitools.client.core.JsonSupport._
+    implicit val codec: Codec[Pet] = deriveCodec[Pet]
 }
 
 

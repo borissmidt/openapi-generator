@@ -14,7 +14,7 @@ package org.openapitools.client.api
 import org.openapitools.client.model.Order
 import org.openapitools.client.core.JsonSupport._
 import sttp.tapir._
-import sttp.tapir.EndpointIO.annotations._
+import sttp.tapir.EndpointIO.annotations
 import sttp.model._
 import scala.deprecated
 import sttp.client3.SttpBackend
@@ -33,9 +33,9 @@ trait StoreApi[F[_]] {
 object StoreApi {
   val baseUrl: String = "http://petstore.swagger.io/v2"
 
-  @endpointInput("/store/order/{orderId}")
+  @annotations.endpointInput("/store/order/{orderId}")
   case class DeleteOrderInput (
-        @path orderId: String
+        @annotations.path orderId: String
   
   )
 
@@ -44,7 +44,7 @@ object StoreApi {
   }
 
   case class DeleteOrderOutput(
-    @jsonbody body : Unit
+    @annotations.jsonbody body : Unit
   )
 
   object DeleteOrderOutput{
@@ -67,7 +67,7 @@ object StoreApi {
       .out(DeleteOrderOutput.endpointOutput)
 
 
-  @endpointInput("/store/inventory")
+  @annotations.endpointInput("/store/inventory")
   case class GetInventoryInput (
 
   )
@@ -77,7 +77,7 @@ object StoreApi {
   }
 
   case class GetInventoryOutput(
-    @jsonbody body : Map[String, Int]
+    @annotations.jsonbody body : Map[String, Int]
   )
 
   object GetInventoryOutput{
@@ -100,9 +100,9 @@ object StoreApi {
       .out(GetInventoryOutput.endpointOutput)
 
 
-  @endpointInput("/store/order/{orderId}")
+  @annotations.endpointInput("/store/order/{orderId}")
   case class GetOrderByIdInput (
-        @path orderId: Long
+        @annotations.path orderId: Long
   
   )
 
@@ -111,7 +111,7 @@ object StoreApi {
   }
 
   case class GetOrderByIdOutput(
-    @jsonbody body : Order
+    @annotations.jsonbody body : Order
   )
 
   object GetOrderByIdOutput{
@@ -135,9 +135,9 @@ object StoreApi {
       .out(GetOrderByIdOutput.endpointOutput)
 
 
-  @endpointInput("/store/order")
+  @annotations.endpointInput("/store/order")
   case class PlaceOrderInput (
-        @jsonbody order: Order
+        @annotations.jsonbody order: Order
   
   )
 
@@ -146,7 +146,7 @@ object StoreApi {
   }
 
   case class PlaceOrderOutput(
-    @jsonbody body : Order
+    @annotations.jsonbody body : Order
   )
 
   object PlaceOrderOutput{
